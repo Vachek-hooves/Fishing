@@ -2,7 +2,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {AppProvider} from './store/context';
-import {TabMapScreen, WelcomeScreen} from './screen';
+import {TabMapScreen, WelcomeScreen,TabMoonScreen,TabWeatherScreen,TabSpotsScreen} from './screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Stack = createNativeStackNavigator();
@@ -17,6 +17,32 @@ const TabScreens = () => {
         options={{
           tabBarIcon: ({color, size}) => (
             <Icon name="map-marker" color={color} size={size} />
+          ),
+          tabBarLabel: 'Map',
+        }}
+      />
+      <Tab.Screen
+        name="TabMoonScreen"
+        component={TabMoonScreen}
+        options={{
+          tabBarIcon: ({color, size}) => (
+            <Icon name="moon-waning-crescent" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen name="TabWeatherScreen" component={TabWeatherScreen} 
+        options={{
+          tabBarIcon: ({color, size}) => (
+            <Icon name="weather-sunny" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="TabSpotsScreen"
+        component={TabSpotsScreen}
+        options={{
+          tabBarIcon: ({color, size}) => (
+            <Icon name="map-marker-radius" color={color} size={size} />
           ),
         }}
       />
