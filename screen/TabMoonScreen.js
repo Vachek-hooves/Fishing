@@ -218,64 +218,83 @@ const TabMoonScreen = () => {
   );
 
   return (
-    <ScrollView 
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-      bounces={true}
-    >
-      <CalendarStrip
-        scrollable
-        style={styles.calendarStrip}
-        calendarColor={'#FFFFFF'}
-        calendarHeaderStyle={styles.calendarHeader}
-        dateNumberStyle={styles.dateNumber}
-        dateNameStyle={styles.dateName}
-        highlightDateNumberStyle={styles.highlightDateNumber}
-        highlightDateNameStyle={styles.highlightDateName}
-        disabledDateNameStyle={styles.disabledDateName}
-        disabledDateNumberStyle={styles.disabledDateNumber}
-        iconContainer={styles.iconContainer}
-        maxDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
-        minDate={new Date('1979-01-01')}
-        selectedDate={new Date()}
-        onDateSelected={handleDateSelected}
-        leftSelector={<CustomLeftArrow />}
-        rightSelector={<CustomRightArrow />}
-        useIsoWeekday={false}
-        styleWeekend={true}
-        showMonth={true}
-        monthHeaderStyle={styles.monthHeader}
-      />
-      
-      {renderCurrentDateWeather()}
+    <View style={styles.container}>
+      <LinearGradient
+        colors={['#003366', '#004d99', '#0066cc']}
+        style={styles.gradientBackground}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 0}}
+      >
+        <ScrollView 
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          bounces={true}
+        >
+          <View style={styles.content}>
+            <CalendarStrip
+              scrollable
+              style={styles.calendarStrip}
+              calendarColor={'#FFFFFF'}
+              calendarHeaderStyle={styles.calendarHeader}
+              dateNumberStyle={styles.dateNumber}
+              dateNameStyle={styles.dateName}
+              highlightDateNumberStyle={styles.highlightDateNumber}
+              highlightDateNameStyle={styles.highlightDateName}
+              disabledDateNameStyle={styles.disabledDateName}
+              disabledDateNumberStyle={styles.disabledDateNumber}
+              iconContainer={styles.iconContainer}
+              maxDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
+              minDate={new Date('1979-01-01')}
+              selectedDate={new Date()}
+              onDateSelected={handleDateSelected}
+              leftSelector={<CustomLeftArrow />}
+              rightSelector={<CustomRightArrow />}
+              useIsoWeekday={false}
+              styleWeekend={true}
+              showMonth={true}
+              monthHeaderStyle={styles.monthHeader}
+            />
+            
+            {renderCurrentDateWeather()}
 
-      {selectedMoonPhase && (
-        <View style={styles.moonInfoContainer}>
-          <Text style={styles.selectedDateText}>
-            {selectedMoonPhase.date}
-          </Text>
-          <Text style={styles.moonPhaseText}>
-            {selectedMoonPhase.text}
-          </Text>
-          <View style={styles.illuminationContainer}>
-            <Text style={styles.illuminationText}>
-              Moon illumination: {selectedMoonPhase.illumination}%
-            </Text>
-            <View style={[
-              styles.illuminationBar, 
-              { width: `${selectedMoonPhase.illumination}%` }
-            ]} />
+            {selectedMoonPhase && (
+              <View style={styles.moonInfoContainer}>
+                <Text style={styles.selectedDateText}>
+                  {selectedMoonPhase.date}
+                </Text>
+                <Text style={styles.moonPhaseText}>
+                  {selectedMoonPhase.text}
+                </Text>
+                <View style={styles.illuminationContainer}>
+                  <Text style={styles.illuminationText}>
+                    Moon illumination: {selectedMoonPhase.illumination}%
+                  </Text>
+                  <View style={[
+                    styles.illuminationBar, 
+                    { width: `${selectedMoonPhase.illumination}%` }
+                  ]} />
+                </View>
+              </View>
+            )}
           </View>
-        </View>
-      )}
-    </ScrollView>
+        </ScrollView>
+      </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f8ff',
+  },
+  gradientBackground: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    padding: 15,
   },
   calendarStrip: {
     marginTop:50,

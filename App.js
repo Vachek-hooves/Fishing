@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -11,34 +12,48 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabScreens = () => {
+  const [focusedScreen, setFocusedScreen] = useState('TabMapScreen');
+
+  const getTabBarGradient = () => {
+    switch (focusedScreen) {
+      case 'TabMoonScreen':
+        return ['#e6f3ff', '#cce6ff', '#b3d9ff'];
+      default:
+        return ['#003366', '#004d99', '#0066cc'];
+    }
+  };
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        
         tabBarBackground: () => (
           <LinearGradient
-            colors={['#003366', '#004d99', '#0066cc']}
+            colors={getTabBarGradient()}
             style={{ height: '100%' }}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           />
         ),
-        tabBarActiveTintColor: '#ffd700', // Gold color for active icons
-        tabBarInactiveTintColor: 'rgba(255, 215, 0, 0.5)', // Faded gold for inactive
-        tabBarLabelStyle: styles.tabBarLabel,
-        tabBarItemStyle: styles.tabBarItem,
-        tabBarIconStyle: { width: 45, height: 45 }, // Set icon container size
-        tabBarIcon: { size: 34 }, // Default icon size
-        
-      }}>
+        tabBarActiveTintColor: focusedScreen === 'TabMoonScreen' ? '#003366' : '#ffd700',
+        tabBarInactiveTintColor: focusedScreen === 'TabMoonScreen' 
+          ? 'rgba(0, 51, 102, 0.5)' 
+          : 'rgba(255, 215, 0, 0.5)',
+      }}
+      screenListeners={{
+        state: (e) => {
+          const route = e.data.state.routes[e.data.state.index];
+          setFocusedScreen(route.name);
+        },
+      }}
+    >
       <Tab.Screen
         name="TabMapScreen"
         component={TabMapScreen}
         options={{
-          tabBarIcon: ({color, size, focused}) => (
-            console.log( size, ),
+          tabBarIcon: ({color,  focused}) => (
+         
             <View style={styles.iconContainer}>
               <Icon 
                 name="map-marker" 
@@ -174,7 +189,7 @@ const styles = {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#ffd700',
+    backgroundColor: props => props.focused === 'TabMoonScreen' ? '#003366' : '#ffd700',
   },
 };
 
