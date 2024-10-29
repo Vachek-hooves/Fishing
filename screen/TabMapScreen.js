@@ -84,9 +84,10 @@ const TabMapScreen = () => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         (position) => {
+          console.log(position);
           const region = {
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+            longitude: position.coords.longitude,  
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           };
