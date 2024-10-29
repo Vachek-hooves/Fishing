@@ -4,6 +4,7 @@ import CalendarStrip from 'react-native-calendar-strip';
 import SunCalc from 'suncalc';
 import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import LinearGradient from 'react-native-linear-gradient';
 
 const API_KEY = 'da09552db9dee8853551090775811fb7';
 
@@ -130,75 +131,117 @@ const TabMoonScreen = () => {
 
     return (
       <View style={styles.currentDateContainer}>
-        <View style={styles.dateHeaderContainer}>
-          <Icon name="calendar-today" size={24} color="#0066ff" />
-          <Text style={styles.currentDateText}>{formatCurrentDate()}</Text>
-        </View>
-        <View style={styles.currentWeatherCard}>
-          <View style={styles.weatherIconContainer}>
-            <Icon 
-              name={getWeatherIcon(selectedMoonPhase.weather.weather[0].id)} 
-              size={60} 
-              color="#0066ff" 
-            />
-            <Text style={styles.bigTemperature}>
-              {Math.round(selectedMoonPhase.weather.main.temp)}°
+        {/* Ocean-themed Date Header */}
+        <LinearGradient
+          colors={['#003366', '#004d99', '#0066cc']}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          style={styles.dateHeaderGradient}
+        >
+          <View style={styles.dateHeaderContent}>
+            <Icon name="calendar-clock" size={28} color="#ffd700" />
+            <Text style={styles.currentDateText}>{formatCurrentDate()}</Text>
+          </View>
+        </LinearGradient>
+
+        {/* Weather Card with Ocean Theme */}
+        <LinearGradient
+          colors={['#e6f3ff', '#cce6ff', '#b3d9ff']}
+          style={styles.weatherGradient}
+        >
+          <View style={styles.weatherContent}>
+            <View style={styles.weatherIconContainer}>
+              <LinearGradient
+                colors={['rgba(0, 102, 204, 0.1)', 'rgba(0, 102, 204, 0.2)']}
+                style={styles.iconBackground}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
+              >
+                <Icon 
+                  name={getWeatherIcon(selectedMoonPhase.weather.weather[0].id)} 
+                  size={70} 
+                  color="#003366" 
+                />
+              </LinearGradient>
+              <View style={styles.temperatureContainer}>
+                <Text style={styles.bigTemperature}>
+                  {Math.round(selectedMoonPhase.weather.main.temp)}°
+                </Text>
+                <Text style={styles.celsiusLabel}>C</Text>
+              </View>
+            </View>
+
+            <Text style={styles.weatherMainText}>
+              {selectedMoonPhase.weather.weather[0].main}
             </Text>
+            <Text style={styles.weatherDescriptionText}>
+              {selectedMoonPhase.weather.weather[0].description.charAt(0).toUpperCase() + 
+               selectedMoonPhase.weather.weather[0].description.slice(1)}
+            </Text>
+
+            {/* Weather Details Card with Ocean Theme */}
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.9)', 'rgba(230, 243, 255, 0.9)']}
+              style={styles.weatherDetailsCard}
+            >
+              <View style={styles.weatherDetailsRow}>
+                <View style={styles.weatherDetailItem}>
+                  <Icon name="water-percent" size={28} color="#003366" />
+                  <Text style={styles.detailLabel}>Humidity</Text>
+                  <Text style={styles.detailValue}>
+                    {selectedMoonPhase.weather.main.humidity}%
+                  </Text>
+                </View>
+                <View style={styles.verticalDivider} />
+                <View style={styles.weatherDetailItem}>
+                  <Icon name="weather-windy" size={28} color="#003366" />
+                  <Text style={styles.detailLabel}>Wind Speed</Text>
+                  <Text style={styles.detailValue}>
+                    {Math.round(selectedMoonPhase.weather.wind.speed * 3.6)} km/h
+                  </Text>
+                </View>
+              </View>
+            </LinearGradient>
           </View>
-          <Text style={styles.weatherMainText}>
-            {selectedMoonPhase.weather.weather[0].main}
-          </Text>
-          <Text style={styles.weatherDescriptionText}>
-            {selectedMoonPhase.weather.weather[0].description.charAt(0).toUpperCase() + 
-             selectedMoonPhase.weather.weather[0].description.slice(1)}
-          </Text>
-          <View style={styles.weatherDetailsRow}>
-            <View style={styles.weatherDetailItem}>
-              <Icon name="water-percent" size={24} color="#0066ff" />
-              <Text style={styles.detailLabel}>Humidity</Text>
-              <Text style={styles.detailValue}>
-                {selectedMoonPhase.weather.main.humidity}%
-              </Text>
-            </View>
-            <View style={styles.verticalDivider} />
-            <View style={styles.weatherDetailItem}>
-              <Icon name="weather-windy" size={24} color="#0066ff" />
-              <Text style={styles.detailLabel}>Wind Speed</Text>
-              <Text style={styles.detailValue}>
-                {Math.round(selectedMoonPhase.weather.wind.speed * 3.6)} km/h
-              </Text>
-            </View>
-          </View>
-        </View>
+        </LinearGradient>
       </View>
     );
   };
 
+  // Custom arrow components using Vector Icons
+  const CustomLeftArrow = () => (
+    <Icon name="chevron-left" size={30} color="#003366" />
+  );
+
+  const CustomRightArrow = () => (
+    <Icon name="chevron-right" size={30} color="#003366" />
+  );
+
   return (
     <View style={styles.container}>
       <CalendarStrip
-        style={styles.calendar}
-        daySelectionAnimation={{
-          type: 'border',
-          duration: 200,
-          borderWidth: 1,
-          borderHighlightColor: '#0066ff'
-        }}
-        onDateSelected={handleDateSelected}
         scrollable
-        startingDate={startDate}
-        minDate={startDate}
-        maxDate={endDate}
-        calendarAnimation={{ type: 'sequence', duration: 30 }}
+        style={styles.calendarStrip}
+        calendarColor={'#FFFFFF'}
+        calendarHeaderStyle={styles.calendarHeader}
         dateNumberStyle={styles.dateNumber}
         dateNameStyle={styles.dateName}
-        highlightDateNumberStyle={styles.highlightDate}
+        highlightDateNumberStyle={styles.highlightDateNumber}
         highlightDateNameStyle={styles.highlightDateName}
-        calendarHeaderStyle={styles.calendarHeader}
-        calendarColor={'#ffffff'}
-        dateContainerStyle={styles.dateContainer}
-        iconContainer={{ flex: 0.1 }}
-        numDaysInWeek={7}
+        disabledDateNameStyle={styles.disabledDateName}
+        disabledDateNumberStyle={styles.disabledDateNumber}
+        iconContainer={styles.iconContainer}
+        maxDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)} // 1 year in advance
+        minDate={new Date('1979-01-01')} // From 1979
+        selectedDate={new Date()}
+        onDateSelected={handleDateSelected}
+        leftSelector={<CustomLeftArrow />}
+        rightSelector={<CustomRightArrow />}
+        useIsoWeekday={false}
+        styleWeekend={true}
+        upperCaseDays={false}
+        showMonth={true}
+        monthHeaderStyle={styles.monthHeader}
       />
       
       {renderCurrentDateWeather()}
@@ -268,38 +311,67 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  calendar: {
-    height: 150,
-    paddingTop: 20,
+  calendarStrip: {
+    marginTop:50,
+    height: 120,
+    paddingTop: 10,
     paddingBottom: 10,
+    backgroundColor: '#f5f8ff', // Light blue background
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: 'rgba(0, 51, 102, 0.1)',
   },
   calendarHeader: {
-    color: '#000',
-    fontSize: 18,
+    color: '#003366',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  monthHeader: {
+    color: '#003366',
+    fontSize: 16,
     fontWeight: 'bold',
-    paddingBottom: 10,
+    padding: 5,
   },
   dateNumber: {
-    color: '#000',
-    fontSize: 14,
+    color: '#003366',
+    fontSize: 16,
+    fontWeight: '500',
   },
   dateName: {
-    color: '#666',
+    color: '#004d99',
     fontSize: 12,
+    marginTop: 3,
   },
-  highlightDate: {
-    color: '#0066ff',
+  highlightDateNumber: {
+    color: '#ffffff',
+    backgroundColor: '#003366',
+    borderRadius: 20,
+    overflow: 'hidden',
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 3,
   },
   highlightDateName: {
-    color: '#0066ff',
+    color: '#ffd700', // Gold color for highlighted date name
+    fontSize: 12,
     fontWeight: 'bold',
   },
-  dateContainer: {
-    borderRadius: 8,
-    padding: 5,
+  disabledDateName: {
+    color: 'rgba(0, 51, 102, 0.3)', // Faded ocean blue
+  },
+  disabledDateNumber: {
+    color: 'rgba(0, 51, 102, 0.3)', // Faded ocean blue
+  },
+  iconContainer: {
+    flex: 0.1,
+    paddingHorizontal: 10,
+  },
+  weekendDateName: {
+    color: '#0066cc', // Slightly different blue for weekends
+  },
+  weekendDateNumber: {
+    color: '#0066cc', // Slightly different blue for weekends
   },
   infoContainer: {
     padding: 15,
@@ -386,32 +458,51 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   currentDateContainer: {
-    padding: 15,
+    marginTop: 15,
+    marginHorizontal: 15,
+    borderRadius: 20,
+    overflow: 'hidden',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
     backgroundColor: '#fff',
   },
-  dateHeaderContainer: {
+  dateHeaderGradient: {
+    width: '100%',
+  },
+  dateHeaderContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 215, 0, 0.3)', // subtle gold line
   },
   currentDateText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color: '#ffd700', // gold text
     marginLeft: 10,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
-  currentWeatherCard: {
-    backgroundColor: '#fff',
-    borderRadius: 15,
+  weatherGradient: {
+    borderTopWidth: 2,
+    borderTopColor: 'rgba(255, 215, 0, 0.2)', // subtle gold border
+  },
+  weatherContent: {
     padding: 20,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+  },
+  iconBackground: {
+    padding: 15,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.3)', // subtle gold border
   },
   weatherIconContainer: {
     flexDirection: 'row',
@@ -419,52 +510,75 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 15,
   },
-  bigTemperature: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#333',
+  temperatureContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     marginLeft: 20,
   },
-  weatherMainText: {
-    fontSize: 24,
+  bigTemperature: {
+    fontSize: 60,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#003366', // deep ocean blue
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  celsiusLabel: {
+    fontSize: 24,
+    color: '#003366',
+    marginTop: 8,
+    fontWeight: '500',
+  },
+  weatherMainText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#003366',
     textAlign: 'center',
     marginBottom: 5,
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   weatherDescriptionText: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 18,
+    color: '#004d99',
     textAlign: 'center',
     marginBottom: 20,
+    fontWeight: '500',
+  },
+  weatherDetailsCard: {
+    borderRadius: 15,
+    padding: 15,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.3)', // subtle gold border
   },
   weatherDetailsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    paddingTop: 15,
   },
   weatherDetailItem: {
     alignItems: 'center',
     flex: 1,
+    padding: 10,
   },
   verticalDivider: {
     width: 1,
-    height: '100%',
-    backgroundColor: '#eee',
+    height: '80%',
+    backgroundColor: 'rgba(0, 51, 102, 0.2)', // subtle ocean blue divider
   },
   detailLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 5,
+    fontSize: 16,
+    color: '#004d99',
+    marginTop: 8,
+    fontWeight: '500',
   },
   detailValue: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
-    marginTop: 3,
+    color: '#003366',
+    marginTop: 5,
   },
 });
 
