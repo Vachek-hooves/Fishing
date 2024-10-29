@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/Feather';
 
 const LoadingIndicator = () => {
     const spinValue = new Animated.Value(0);
@@ -24,8 +24,7 @@ const LoadingIndicator = () => {
     return (
       <View style={styles.container}>
         <Animated.View style={{ transform: [{ rotate: spin }] }}>
-          {/* <Icon name="fishing" size={50} color="#0066ff" /> */}
-          
+          <Icon name="loader" size={60} color="#0066ff" />
         </Animated.View>
       </View>
     );
