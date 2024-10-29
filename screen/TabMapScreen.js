@@ -6,16 +6,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TabMapScreen = () => {
   const [markers, setMarkers] = useState([]);
-  const [region, setRegion] = useState({
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
+  const [initialRegion, setInitialRegion] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadMarkers();
-    requestLocationPermission();
+    const initializeMap = async () => {
+      await loadMarkers();
+      await requestLocationPermission();
+    };
+
+    initializeMap();
   }, []);
 
   const requestLocationPermission = async () => {
@@ -23,13 +23,14 @@ const TabMapScreen = () => {
       if (Platform.OS === 'ios') {
         const granted = await Geolocation.requestAuthorization('whenInUse');
         if (granted === 'granted') {
-          getCurrentLocation();
+          await getCurrentLocation();
         } else {
           Alert.alert(
             'Location Permission Required',
             'Please enable location permissions in settings',
             [{ text: 'OK' }]
           );
+          setIsLoading(false);
         }
       } else {
         const granted = await PermissionsAndroid.request(
@@ -43,18 +44,53 @@ const TabMapScreen = () => {
           }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          getCurrentLocation();
+          await getCurrentLocation();
         } else {
           Alert.alert(
             'Location Permission Denied',
             'You need to enable location permissions to see your position on the map',
             [{ text: 'OK' }]
           );
+          setIsLoading(false);
         }
       }
     } catch (err) {
       console.warn(err);
+      setIsLoading(false);
     }
+  };
+
+  const getCurrentLocation = () => {
+    return new Promise((resolve, reject) => {
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const region = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          };
+          setInitialRegion(region);
+          setIsLoading(false);
+          resolve(position);
+        },
+        (error) => {
+          console.log(error);
+          Alert.alert(
+            'Error',
+            'Unable to get your location. Please check your settings.',
+            [{ text: 'OK' }]
+          );
+          setIsLoading(false);
+          reject(error);
+        },
+        { 
+          enableHighAccuracy: true, 
+          timeout: 15000, 
+          maximumAge: 10000 
+        }
+      );
+    });
   };
 
   const loadMarkers = async () => {
@@ -66,32 +102,6 @@ const TabMapScreen = () => {
     } catch (error) {
       console.error('Error loading markers:', error);
     }
-  };
-
-  const getCurrentLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        setRegion({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        });
-      },
-      (error) => {
-        console.log(error);
-        Alert.alert(
-          'Error',
-          'Unable to get your location. Please check your settings.',
-          [{ text: 'OK' }]
-        );
-      },
-      { 
-        enableHighAccuracy: true, 
-        timeout: 15000, 
-        maximumAge: 10000 
-      }
-    );
   };
 
   const handleMapLongPress = async (e) => {
@@ -112,24 +122,34 @@ const TabMapScreen = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading map...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        region={region}
-        onLongPress={handleMapLongPress}
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-      >
-        {markers.map((marker) => (
-          <Marker
-            key={marker.id}
-            coordinate={marker.coordinate}
-            title={marker.title}
-            description={marker.description}
-          />
-        ))}
-      </MapView>
+      {initialRegion && (
+        <MapView
+          style={styles.map}
+          initialRegion={initialRegion}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+          onLongPress={handleMapLongPress}
+        >
+          {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              coordinate={marker.coordinate}
+              title={marker.title}
+              description={marker.description}
+            />
+          ))}
+        </MapView>
+      )}
     </View>
   );
 };
@@ -140,6 +160,11 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
