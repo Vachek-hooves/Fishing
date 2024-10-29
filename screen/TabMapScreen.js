@@ -11,13 +11,16 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  FlatList
+  FlatList,
+  ActivityIndicator,
+  Animated
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'react-native-image-picker';
+import LoadingIndicator from '../components/ui/LoadingIndicator';
 
 const TabMapScreen = () => {
   const [markers, setMarkers] = useState([]);
@@ -28,6 +31,8 @@ const TabMapScreen = () => {
   const [markerTitle, setMarkerTitle] = useState('');
   const [markerDescription, setMarkerDescription] = useState('');
   const [markerImages, setMarkerImages] = useState([]);
+  const [fadeAnim] = useState(new Animated.Value(1));
+  const [locationError, setLocationError] = useState(false);
 
   useEffect(() => {
     const initializeMap = async () => {
@@ -84,34 +89,42 @@ const TabMapScreen = () => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         (position) => {
-          // console.log(position);
           const region = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,  
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           };
+          setLocationError(false);
           setInitialRegion(region);
-          setIsLoading(false);
+          fadeOut();
           resolve(position);
         },
         (error) => {
-          console.log(error);
-          Alert.alert(
-            'Error',
-            'Unable to get your location. Please check your settings.',
-            [{ text: 'OK' }]
-          );
+          console.log('Location error:', error);
+          setLocationError(true);
           setIsLoading(false);
           reject(error);
         },
         { 
           enableHighAccuracy: true, 
-          timeout: 15000, 
-          maximumAge: 10000 
+          timeout: 20000,
+          maximumAge: 1000,
+          distanceFilter: 10,
+          forceRequestLocation: true,
         }
       );
     });
+  };
+
+  const retryLocation = async () => {
+    setIsLoading(true);
+    setLocationError(false);
+    try {
+      await requestLocationPermission();
+    } catch (error) {
+      console.error('Retry failed:', error);
+    }
   };
 
   const loadMarkers = async () => {
@@ -238,10 +251,65 @@ const TabMapScreen = () => {
     </View>
   );
 
-  if (isLoading) {
+  const fadeOut = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => setIsLoading(false));
+  };
+
+  const renderLoadingScreen = () => (
+    <Animated.View 
+      style={[
+        styles.loadingContainer,
+        {
+          opacity: fadeAnim,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }
+      ]}
+    >
+      <View style={styles.loaderContent}>
+        {locationError ? (
+          <>
+            <Icon name="location-disabled" size={50} color="#ff6b6b" />
+            <Text style={styles.errorText}>Location Error</Text>
+            <Text style={styles.errorSubText}>
+              Unable to get your location. Please check your:
+            </Text>
+            <View style={styles.errorChecklist}>
+              <Text style={styles.checklistItem}>• Internet connection</Text>
+              <Text style={styles.checklistItem}>• Location services</Text>
+              <Text style={styles.checklistItem}>• Location permissions</Text>
+            </View>
+            <TouchableOpacity 
+              style={styles.retryButton}
+              onPress={retryLocation}
+            >
+              <Icon name="refresh" size={24} color="white" />
+              <Text style={styles.retryButtonText}>Retry</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <LoadingIndicator />
+            <Text style={styles.loadingText}>Loading Map...</Text>
+            <Text style={styles.loadingSubText}>Finding the perfect fishing spots</Text>
+          </>
+        )}
+      </View>
+    </Animated.View>
+  );
+
+  if (isLoading || locationError) {
     return (
       <View style={styles.loadingContainer}>
         <Text>Loading map...</Text>
+        <LoadingIndicator/>
       </View>
     );
   }
@@ -255,6 +323,9 @@ const TabMapScreen = () => {
           showsUserLocation={true}
           showsMyLocationButton={true}
           onLongPress={handleMapLongPress}
+          onMapReady={() => {
+            console.log('Map is ready');
+          }}
         >
           {markers.map((marker) => (
             <Marker
@@ -267,6 +338,8 @@ const TabMapScreen = () => {
           ))}
         </MapView>
       )}
+
+      {(isLoading || locationError) && renderLoadingScreen()}
 
       <Modal
         visible={modalVisible}
@@ -456,6 +529,80 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  loaderContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loaderImage: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
+  },
+  spinner: {
+    marginVertical: 10,
+  },
+  loadingText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 10,
+  },
+  loadingSubText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 5,
+  },
+  errorText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    marginTop: 20,
+  },
+  errorSubText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  errorChecklist: {
+    alignItems: 'flex-start',
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  checklistItem: {
+    fontSize: 16,
+    color: '#666',
+    marginVertical: 5,
+  },
+  retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 10,
   },
 });
 
