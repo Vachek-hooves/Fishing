@@ -84,7 +84,7 @@ const TabMapScreen = () => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         (position) => {
-          console.log(position);
+          // console.log(position);
           const region = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,  
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    maxHeight: '80%',
+    maxHeight: '90%',
   },
   modalTitle: {
     fontSize: 20,
