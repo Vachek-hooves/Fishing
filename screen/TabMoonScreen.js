@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import SunCalc from 'suncalc';
 import Geolocation from 'react-native-geolocation-service';
@@ -218,7 +218,11 @@ const TabMoonScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      bounces={true}
+    >
       <CalendarStrip
         scrollable
         style={styles.calendarStrip}
@@ -231,85 +235,47 @@ const TabMoonScreen = () => {
         disabledDateNameStyle={styles.disabledDateName}
         disabledDateNumberStyle={styles.disabledDateNumber}
         iconContainer={styles.iconContainer}
-        maxDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)} // 1 year in advance
-        minDate={new Date('1979-01-01')} // From 1979
+        maxDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
+        minDate={new Date('1979-01-01')}
         selectedDate={new Date()}
         onDateSelected={handleDateSelected}
         leftSelector={<CustomLeftArrow />}
         rightSelector={<CustomRightArrow />}
         useIsoWeekday={false}
         styleWeekend={true}
-        upperCaseDays={false}
         showMonth={true}
         monthHeaderStyle={styles.monthHeader}
       />
       
       {renderCurrentDateWeather()}
-      
+
       {selectedMoonPhase && (
-        <View style={styles.infoContainer}>
-          <Text style={styles.selectedDateText}>{selectedMoonPhase.date}</Text>
-          
-          {/* Moon Information */}
-          <View style={styles.moonInfoContainer}>
-            <Text style={styles.moonPhaseText}>{selectedMoonPhase.text}</Text>
-            <View style={styles.illuminationContainer}>
-              <Text style={styles.illuminationText}>
-                Moon illumination: {selectedMoonPhase.illumination}%
-              </Text>
-              <View style={[
-                styles.illuminationBar, 
-                { width: `${selectedMoonPhase.illumination}%` }
-              ]} />
-            </View>
+        <View style={styles.moonInfoContainer}>
+          <Text style={styles.selectedDateText}>
+            {selectedMoonPhase.date}
+          </Text>
+          <Text style={styles.moonPhaseText}>
+            {selectedMoonPhase.text}
+          </Text>
+          <View style={styles.illuminationContainer}>
+            <Text style={styles.illuminationText}>
+              Moon illumination: {selectedMoonPhase.illumination}%
+            </Text>
+            <View style={[
+              styles.illuminationBar, 
+              { width: `${selectedMoonPhase.illumination}%` }
+            ]} />
           </View>
-
-          {/* Weather Information */}
-          {selectedMoonPhase.weather && (
-            <View style={styles.weatherContainer}>
-              <View style={styles.weatherHeader}>
-                <Icon 
-                  name={getWeatherIcon(selectedMoonPhase.weather.weather[0].id)} 
-                  size={40} 
-                  color="#333" 
-                />
-                <Text style={styles.temperatureText}>
-                  {Math.round(selectedMoonPhase.weather.main.temp)}°C
-                </Text>
-              </View>
-              
-              <Text style={styles.weatherDescription}>
-                {selectedMoonPhase.weather.weather[0].description.charAt(0).toUpperCase() + 
-                 selectedMoonPhase.weather.weather[0].description.slice(1)}
-              </Text>
-
-              <View style={styles.weatherDetails}>
-                <View style={styles.weatherDetail}>
-                  <Icon name="water-percent" size={20} color="#666" />
-                  <Text style={styles.detailText}>
-                    {selectedMoonPhase.weather.main.humidity}%
-                  </Text>
-                </View>
-
-                <View style={styles.weatherDetail}>
-                  <Icon name="weather-windy" size={20} color="#666" />
-                  <Text style={styles.detailText}>
-                    {Math.round(selectedMoonPhase.weather.wind.speed * 3.6)} km/h
-                  </Text>
-                </View>
-              </View>
-            </View>
-          )}
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f8ff',
   },
   calendarStrip: {
     marginTop:50,
@@ -377,69 +343,36 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   moonInfoContainer: {
-    padding: 15,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-    marginBottom: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  weatherContainer: {
-    padding: 15,
     backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 3,
+    margin: 15,
+    padding: 20,
+    borderRadius: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  weatherHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    marginBottom: 10,
-  },
-  temperatureText: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  weatherDescription: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  weatherDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    paddingTop: 15,
-  },
-  weatherDetail: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  detailText: {
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 5,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.3)', // subtle gold border
   },
   selectedDateText: {
     fontSize: 16,
-    color: '#666',
+    color: '#004d99',
     marginBottom: 10,
+    textAlign: 'center',
   },
   moonPhaseText: {
     fontSize: 28,
     fontWeight: 'bold',
+    color: '#003366',
+    textAlign: 'center',
     marginBottom: 15,
-    color: '#2c3e50',
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   illuminationContainer: {
     width: '100%',
@@ -447,12 +380,13 @@ const styles = StyleSheet.create({
   },
   illuminationText: {
     fontSize: 16,
-    color: '#666',
+    color: '#004d99',
     marginBottom: 10,
+    textAlign: 'center',
   },
   illuminationBar: {
     height: 8,
-    backgroundColor: '#0066ff',
+    backgroundColor: '#ffd700',
     borderRadius: 4,
     alignSelf: 'flex-start',
     maxWidth: '100%',
