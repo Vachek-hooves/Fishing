@@ -1,10 +1,97 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import SunCalc from 'suncalc';
+import Geolocation from 'react-native-geolocation-service';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const API_KEY = 'da09552db9dee8853551090775811fb7';
 
 const TabMoonScreen = () => {
   const [selectedMoonPhase, setSelectedMoonPhase] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
+
+  const getCurrentLocation = async () => {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          (pos) => resolve(pos),
+          (error) => reject(error),
+          { 
+            enableHighAccuracy: true, 
+            timeout: 20000,
+            maximumAge: 1000,
+          }
+        );
+      });
+      
+      setLocation({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      });
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Location error:', error);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchHistoricalWeather = async (date, lat, lon) => {
+    const timestamp = Math.floor(date.getTime() / 1000);
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&dt=${timestamp}&units=metric&appid=${API_KEY}`
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Weather fetch error:', error);
+      return null;
+    }
+  };
+
+  const getWeatherIcon = (weatherId) => {
+    if (weatherId >= 200 && weatherId < 300) return 'weather-lightning';
+    if (weatherId >= 300 && weatherId < 400) return 'weather-pouring';
+    if (weatherId >= 500 && weatherId < 600) return 'weather-rainy';
+    if (weatherId >= 600 && weatherId < 700) return 'weather-snowy';
+    if (weatherId >= 700 && weatherId < 800) return 'weather-fog';
+    if (weatherId === 800) return 'weather-sunny';
+    if (weatherId > 800) return 'weather-cloudy';
+    return 'weather-cloudy';
+  };
+
+  const handleDateSelected = async (date) => {
+    const jsDate = date.toDate();
+    
+    // Get moon information
+    const moonInfo = SunCalc.getMoonIllumination(jsDate);
+    const phaseText = getMoonPhaseText(moonInfo.phase);
+    
+    // Get weather information if location is available
+    let weatherInfo = null;
+    if (location) {
+      weatherInfo = await fetchHistoricalWeather(
+        jsDate,
+        location.latitude,
+        location.longitude
+      );
+    }
+
+    setSelectedMoonPhase({
+      phase: moonInfo.phase,
+      text: phaseText,
+      illumination: Math.round(moonInfo.fraction * 100),
+      date: jsDate.toDateString(),
+      weather: weatherInfo
+    });
+  };
 
   // Get start and end dates for the current month
   const getMonthDates = () => {
@@ -23,20 +110,6 @@ const TabMoonScreen = () => {
     if (phase <= 0.70) return 'Waning Gibbous 🌖';
     if (phase <= 0.80) return 'Last Quarter 🌗';
     return 'Waning Crescent 🌘';
-  };
-
-  const handleDateSelected = (date) => {
-    // Convert moment object to JavaScript Date
-    const jsDate = date.toDate();
-    
-    const moonInfo = SunCalc.getMoonIllumination(jsDate);
-    const phaseText = getMoonPhaseText(moonInfo.phase);
-    setSelectedMoonPhase({
-      phase: moonInfo.phase,
-      text: phaseText,
-      illumination: Math.round(moonInfo.fraction * 100),
-      date: jsDate.toDateString()
-    });
   };
 
   const { startDate, endDate } = getMonthDates();
@@ -69,18 +142,59 @@ const TabMoonScreen = () => {
       />
       
       {selectedMoonPhase && (
-        <View style={styles.moonInfoContainer}>
+        <View style={styles.infoContainer}>
           <Text style={styles.selectedDateText}>{selectedMoonPhase.date}</Text>
-          <Text style={styles.moonPhaseText}>{selectedMoonPhase.text}</Text>
-          <View style={styles.illuminationContainer}>
-            <Text style={styles.illuminationText}>
-              Moon illumination: {selectedMoonPhase.illumination}%
-            </Text>
-            <View style={[
-              styles.illuminationBar, 
-              { width: `${selectedMoonPhase.illumination}%` }
-            ]} />
+          
+          {/* Moon Information */}
+          <View style={styles.moonInfoContainer}>
+            <Text style={styles.moonPhaseText}>{selectedMoonPhase.text}</Text>
+            <View style={styles.illuminationContainer}>
+              <Text style={styles.illuminationText}>
+                Moon illumination: {selectedMoonPhase.illumination}%
+              </Text>
+              <View style={[
+                styles.illuminationBar, 
+                { width: `${selectedMoonPhase.illumination}%` }
+              ]} />
+            </View>
           </View>
+
+          {/* Weather Information */}
+          {selectedMoonPhase.weather && (
+            <View style={styles.weatherContainer}>
+              <View style={styles.weatherHeader}>
+                <Icon 
+                  name={getWeatherIcon(selectedMoonPhase.weather.weather[0].id)} 
+                  size={40} 
+                  color="#333" 
+                />
+                <Text style={styles.temperatureText}>
+                  {Math.round(selectedMoonPhase.weather.main.temp)}°C
+                </Text>
+              </View>
+              
+              <Text style={styles.weatherDescription}>
+                {selectedMoonPhase.weather.weather[0].description.charAt(0).toUpperCase() + 
+                 selectedMoonPhase.weather.weather[0].description.slice(1)}
+              </Text>
+
+              <View style={styles.weatherDetails}>
+                <View style={styles.weatherDetail}>
+                  <Icon name="water-percent" size={20} color="#666" />
+                  <Text style={styles.detailText}>
+                    {selectedMoonPhase.weather.main.humidity}%
+                  </Text>
+                </View>
+
+                <View style={styles.weatherDetail}>
+                  <Icon name="weather-windy" size={20} color="#666" />
+                  <Text style={styles.detailText}>
+                    {Math.round(selectedMoonPhase.weather.wind.speed * 3.6)} km/h
+                  </Text>
+                </View>
+              </View>
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -125,20 +239,62 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 5,
   },
+  infoContainer: {
+    padding: 15,
+  },
   moonInfoContainer: {
-    padding: 20,
-    alignItems: 'center',
+    padding: 15,
     backgroundColor: '#f8f9fa',
-    margin: 15,
     borderRadius: 12,
+    marginBottom: 15,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  weatherContainer: {
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 12,
     elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  weatherHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+  },
+  temperatureText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  weatherDescription: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  weatherDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    paddingTop: 15,
+  },
+  weatherDetail: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  detailText: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 5,
   },
   selectedDateText: {
     fontSize: 16,
