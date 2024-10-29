@@ -259,61 +259,6 @@ const TabMapScreen = () => {
     }).start(() => setIsLoading(false));
   };
 
-  const renderLoadingScreen = () => (
-    <Animated.View 
-      style={[
-        styles.loadingContainer,
-        {
-          opacity: fadeAnim,
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }
-      ]}
-    >
-      <View style={styles.loaderContent}>
-        {locationError ? (
-          <>
-            <Icon name="location-disabled" size={50} color="#ff6b6b" />
-            <Text style={styles.errorText}>Location Error</Text>
-            <Text style={styles.errorSubText}>
-              Unable to get your location. Please check your:
-            </Text>
-            <View style={styles.errorChecklist}>
-              <Text style={styles.checklistItem}>• Internet connection</Text>
-              <Text style={styles.checklistItem}>• Location services</Text>
-              <Text style={styles.checklistItem}>• Location permissions</Text>
-            </View>
-            <TouchableOpacity 
-              style={styles.retryButton}
-              onPress={retryLocation}
-            >
-              <Icon name="refresh" size={24} color="white" />
-              <Text style={styles.retryButtonText}>Retry</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-            <LoadingIndicator />
-            <Text style={styles.loadingText}>Loading Map...</Text>
-            <Text style={styles.loadingSubText}>Finding the perfect fishing spots</Text>
-          </>
-        )}
-      </View>
-    </Animated.View>
-  );
-
-  if (isLoading || locationError) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading map...</Text>
-        <LoadingIndicator/>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       {initialRegion && (
@@ -339,7 +284,51 @@ const TabMapScreen = () => {
         </MapView>
       )}
 
-      {(isLoading || locationError) && renderLoadingScreen()}
+      {(isLoading || locationError) && (
+        <Animated.View 
+          style={[
+            styles.loadingContainer,
+            {
+              opacity: fadeAnim,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }
+          ]}
+        >
+          <View style={styles.loaderContent}>
+            {locationError ? (
+              <>
+                <Icon name="location-disabled" size={50} color="#ff6b6b" />
+                <Text style={styles.errorText}>Location Error</Text>
+                <Text style={styles.errorSubText}>
+                  Unable to get your location. Please check your:
+                </Text>
+                <View style={styles.errorChecklist}>
+                  <Text style={styles.checklistItem}>• Internet connection</Text>
+                  <Text style={styles.checklistItem}>• Location services</Text>
+                  <Text style={styles.checklistItem}>• Location permissions</Text>
+                </View>
+                <TouchableOpacity 
+                  style={styles.retryButton}
+                  onPress={retryLocation}
+                >
+                  <Icon name="refresh" size={24} color="white" />
+                  <Text style={styles.retryButtonText}>Retry</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <LoadingIndicator />
+                <Text style={styles.loadingText}>Loading Map...</Text>
+                <Text style={styles.loadingSubText}>Finding the perfect fishing spots</Text>
+              </>
+            )}
+          </View>
+        </Animated.View>
+      )}
 
       <Modal
         visible={modalVisible}
