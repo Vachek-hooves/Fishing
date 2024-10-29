@@ -114,6 +114,66 @@ const TabMoonScreen = () => {
 
   const { startDate, endDate } = getMonthDates();
 
+  const formatCurrentDate = () => {
+    const now = new Date();
+    const options = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    return now.toLocaleDateString('en-US', options);
+  };
+
+  const renderCurrentDateWeather = () => {
+    if (!location || !selectedMoonPhase?.weather) return null;
+
+    return (
+      <View style={styles.currentDateContainer}>
+        <View style={styles.dateHeaderContainer}>
+          <Icon name="calendar-today" size={24} color="#0066ff" />
+          <Text style={styles.currentDateText}>{formatCurrentDate()}</Text>
+        </View>
+        <View style={styles.currentWeatherCard}>
+          <View style={styles.weatherIconContainer}>
+            <Icon 
+              name={getWeatherIcon(selectedMoonPhase.weather.weather[0].id)} 
+              size={60} 
+              color="#0066ff" 
+            />
+            <Text style={styles.bigTemperature}>
+              {Math.round(selectedMoonPhase.weather.main.temp)}°
+            </Text>
+          </View>
+          <Text style={styles.weatherMainText}>
+            {selectedMoonPhase.weather.weather[0].main}
+          </Text>
+          <Text style={styles.weatherDescriptionText}>
+            {selectedMoonPhase.weather.weather[0].description.charAt(0).toUpperCase() + 
+             selectedMoonPhase.weather.weather[0].description.slice(1)}
+          </Text>
+          <View style={styles.weatherDetailsRow}>
+            <View style={styles.weatherDetailItem}>
+              <Icon name="water-percent" size={24} color="#0066ff" />
+              <Text style={styles.detailLabel}>Humidity</Text>
+              <Text style={styles.detailValue}>
+                {selectedMoonPhase.weather.main.humidity}%
+              </Text>
+            </View>
+            <View style={styles.verticalDivider} />
+            <View style={styles.weatherDetailItem}>
+              <Icon name="weather-windy" size={24} color="#0066ff" />
+              <Text style={styles.detailLabel}>Wind Speed</Text>
+              <Text style={styles.detailValue}>
+                {Math.round(selectedMoonPhase.weather.wind.speed * 3.6)} km/h
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <CalendarStrip
@@ -140,6 +200,8 @@ const TabMoonScreen = () => {
         iconContainer={{ flex: 0.1 }}
         numDaysInWeek={7}
       />
+      
+      {renderCurrentDateWeather()}
       
       {selectedMoonPhase && (
         <View style={styles.infoContainer}>
@@ -322,6 +384,87 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     alignSelf: 'flex-start',
     maxWidth: '100%',
+  },
+  currentDateContainer: {
+    padding: 15,
+    backgroundColor: '#fff',
+  },
+  dateHeaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  currentDateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginLeft: 10,
+  },
+  currentWeatherCard: {
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 20,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  weatherIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+  bigTemperature: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#333',
+    marginLeft: 20,
+  },
+  weatherMainText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  weatherDescriptionText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  weatherDetailsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    paddingTop: 15,
+  },
+  weatherDetailItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  verticalDivider: {
+    width: 1,
+    height: '100%',
+    backgroundColor: '#eee',
+  },
+  detailLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 5,
+  },
+  detailValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 3,
   },
 });
 
