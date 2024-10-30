@@ -1,5 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  ScrollView,
+} from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import SunCalc from 'suncalc';
 import Geolocation from 'react-native-geolocation-service';
@@ -22,19 +28,19 @@ const TabMoonScreen = () => {
     try {
       const position = await new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(
-          (pos) => resolve(pos),
-          (error) => reject(error),
-          { 
-            enableHighAccuracy: true, 
+          pos => resolve(pos),
+          error => reject(error),
+          {
+            enableHighAccuracy: true,
             timeout: 20000,
             maximumAge: 1000,
-          }
+          },
         );
       });
-      
+
       setLocation({
         latitude: position.coords.latitude,
-        longitude: position.coords.longitude
+        longitude: position.coords.longitude,
       });
       setIsLoading(false);
     } catch (error) {
@@ -47,7 +53,7 @@ const TabMoonScreen = () => {
     const timestamp = Math.floor(date.getTime() / 1000);
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&dt=${timestamp}&units=metric&appid=${API_KEY}`
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&dt=${timestamp}&units=metric&appid=${API_KEY}`,
       );
       const data = await response.json();
       return data;
@@ -57,7 +63,7 @@ const TabMoonScreen = () => {
     }
   };
 
-  const getWeatherIcon = (weatherId) => {
+  const getWeatherIcon = weatherId => {
     if (weatherId >= 200 && weatherId < 300) return 'weather-lightning';
     if (weatherId >= 300 && weatherId < 400) return 'weather-pouring';
     if (weatherId >= 500 && weatherId < 600) return 'weather-rainy';
@@ -68,20 +74,20 @@ const TabMoonScreen = () => {
     return 'weather-cloudy';
   };
 
-  const handleDateSelected = async (date) => {
+  const handleDateSelected = async date => {
     const jsDate = date.toDate();
-    
+
     // Get moon information
     const moonInfo = SunCalc.getMoonIllumination(jsDate);
     const phaseText = getMoonPhaseText(moonInfo.phase);
-    
+
     // Get weather information if location is available
     let weatherInfo = null;
     if (location) {
       weatherInfo = await fetchHistoricalWeather(
         jsDate,
         location.latitude,
-        location.longitude
+        location.longitude,
       );
     }
 
@@ -90,7 +96,7 @@ const TabMoonScreen = () => {
       text: phaseText,
       illumination: Math.round(moonInfo.fraction * 100),
       date: jsDate.toDateString(),
-      weather: weatherInfo
+      weather: weatherInfo,
     });
   };
 
@@ -99,29 +105,29 @@ const TabMoonScreen = () => {
     const today = new Date();
     const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
     const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    return { startDate, endDate };
+    return {startDate, endDate};
   };
 
-  const getMoonPhaseText = (phase) => {
+  const getMoonPhaseText = phase => {
     if (phase <= 0.05 || phase > 0.95) return 'New Moon 🌑';
-    if (phase <= 0.20) return 'Waxing Crescent 🌒';
-    if (phase <= 0.30) return 'First Quarter 🌓';
+    if (phase <= 0.2) return 'Waxing Crescent 🌒';
+    if (phase <= 0.3) return 'First Quarter 🌓';
     if (phase <= 0.45) return 'Waxing Gibbous 🌔';
     if (phase <= 0.55) return 'Full Moon 🌕';
-    if (phase <= 0.70) return 'Waning Gibbous 🌖';
-    if (phase <= 0.80) return 'Last Quarter 🌗';
+    if (phase <= 0.7) return 'Waning Gibbous 🌖';
+    if (phase <= 0.8) return 'Last Quarter 🌗';
     return 'Waning Crescent 🌘';
   };
 
-  const { startDate, endDate } = getMonthDates();
+  const {startDate, endDate} = getMonthDates();
 
   const formatCurrentDate = () => {
     const now = new Date();
-    const options = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     };
     return now.toLocaleDateString('en-US', options);
   };
@@ -133,13 +139,12 @@ const TabMoonScreen = () => {
       <View style={styles.currentDateContainer}>
         {/* Ocean-themed Date Header */}
         <LinearGradient
-          colors={['#003366', '#004d99', '#0066cc']}
+          colors={['#e6f9ff', '#cce6ff', '#b3d9ff']}
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
-          style={styles.dateHeaderGradient}
-        >
+          style={styles.dateHeaderGradient}>
           <View style={styles.dateHeaderContent}>
-            <Icon name="calendar-clock" size={28} color="#ffd700" />
+            <Icon name="calendar-clock" size={28} color="#003366" />
             <Text style={styles.currentDateText}>{formatCurrentDate()}</Text>
           </View>
         </LinearGradient>
@@ -147,20 +152,18 @@ const TabMoonScreen = () => {
         {/* Weather Card with Ocean Theme */}
         <LinearGradient
           colors={['#e6f3ff', '#cce6ff', '#b3d9ff']}
-          style={styles.weatherGradient}
-        >
+          style={styles.weatherGradient}>
           <View style={styles.weatherContent}>
             <View style={styles.weatherIconContainer}>
               <LinearGradient
-                colors={['rgba(0, 102, 204, 0.1)', 'rgba(0, 102, 204, 0.2)']}
+                colors={['rgba(0, 102, 204, 0.1)', 'rgba(0, 102, 204, 0.3)']}
                 style={styles.iconBackground}
                 start={{x: 0, y: 0}}
-                end={{x: 1, y: 1}}
-              >
-                <Icon 
-                  name={getWeatherIcon(selectedMoonPhase.weather.weather[0].id)} 
-                  size={70} 
-                  color="#003366" 
+                end={{x: 1, y: 1}}>
+                <Icon
+                  name={getWeatherIcon(selectedMoonPhase.weather.weather[0].id)}
+                  size={80}
+                  color="#003366"
                 />
               </LinearGradient>
               <View style={styles.temperatureContainer}>
@@ -175,18 +178,19 @@ const TabMoonScreen = () => {
               {selectedMoonPhase.weather.weather[0].main}
             </Text>
             <Text style={styles.weatherDescriptionText}>
-              {selectedMoonPhase.weather.weather[0].description.charAt(0).toUpperCase() + 
-               selectedMoonPhase.weather.weather[0].description.slice(1)}
+              {selectedMoonPhase.weather.weather[0].description
+                .charAt(0)
+                .toUpperCase() +
+                selectedMoonPhase.weather.weather[0].description.slice(1)}
             </Text>
 
             {/* Weather Details Card with Ocean Theme */}
             <LinearGradient
-              colors={['rgba(255, 255, 255, 0.9)', 'rgba(230, 243, 255, 0.9)']}
-              style={styles.weatherDetailsCard}
-            >
+              colors={['rgba(255, 255, 255, 0.5)', 'rgba(230, 243, 255, 0.9)']}
+              style={styles.weatherDetailsCard}>
               <View style={styles.weatherDetailsRow}>
                 <View style={styles.weatherDetailItem}>
-                  <Icon name="water-percent" size={28} color="#003366" />
+                  <Icon name="water-percent" size={30} color="#003366" />
                   <Text style={styles.detailLabel}>Humidity</Text>
                   <Text style={styles.detailValue}>
                     {selectedMoonPhase.weather.main.humidity}%
@@ -194,10 +198,11 @@ const TabMoonScreen = () => {
                 </View>
                 <View style={styles.verticalDivider} />
                 <View style={styles.weatherDetailItem}>
-                  <Icon name="weather-windy" size={28} color="#003366" />
+                  <Icon name="weather-windy" size={30} color="#003366" />
                   <Text style={styles.detailLabel}>Wind Speed</Text>
                   <Text style={styles.detailValue}>
-                    {Math.round(selectedMoonPhase.weather.wind.speed * 3.6)} km/h
+                    {Math.round(selectedMoonPhase.weather.wind.speed * 3.6)}{' '}
+                    km/h
                   </Text>
                 </View>
               </View>
@@ -223,13 +228,11 @@ const TabMoonScreen = () => {
         colors={['#003366', '#004d99', '#0066cc']}
         style={styles.gradientBackground}
         start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}
-      >
-        <ScrollView 
+        end={{x: 1, y: 0}}>
+        <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
-          bounces={true}
-        >
+          bounces={true}>
           <View style={styles.content}>
             <CalendarStrip
               scrollable
@@ -254,8 +257,6 @@ const TabMoonScreen = () => {
               showMonth={true}
               monthHeaderStyle={styles.monthHeader}
             />
-            
-            {renderCurrentDateWeather()}
 
             {selectedMoonPhase && (
               <View style={styles.moonInfoContainer}>
@@ -269,15 +270,20 @@ const TabMoonScreen = () => {
                   <Text style={styles.illuminationText}>
                     Moon illumination: {selectedMoonPhase.illumination}%
                   </Text>
-                  <View style={[
-                    styles.illuminationBar, 
-                    { width: `${selectedMoonPhase.illumination}%` }
-                  ]} />
+                  <View
+                    style={[
+                      styles.illuminationBar,
+                      {width: `${selectedMoonPhase.illumination}%`},
+                    ]}
+                  />
                 </View>
               </View>
             )}
+            {renderCurrentDateWeather()}
+
           </View>
         </ScrollView>
+        <View style={{height:120}}></View>
       </LinearGradient>
     </View>
   );
@@ -294,20 +300,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 15,
+    padding: 10,
   },
   calendarStrip: {
-    marginTop:50,
-    height: 120,
+    marginTop: 50,
+    height: 130,
     paddingTop: 10,
     paddingBottom: 10,
     backgroundColor: '#f5f8ff', // Light blue background
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0, 51, 102, 0.1)',
+    borderRadius:12
   },
   calendarHeader: {
     color: '#003366',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
   monthHeader: {
@@ -323,7 +330,7 @@ const styles = StyleSheet.create({
   },
   dateName: {
     color: '#004d99',
-    fontSize: 12,
+    fontSize: 14,
     marginTop: 3,
   },
   highlightDateNumber: {
@@ -390,7 +397,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 15,
     textShadowColor: 'rgba(0, 0, 0, 0.1)',
-    textShadowOffset: { width: 1, height: 1 },
+    textShadowOffset: {width: 1, height: 1},
     textShadowRadius: 2,
   },
   illuminationContainer: {
@@ -398,13 +405,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   illuminationText: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#004d99',
     marginBottom: 10,
     textAlign: 'center',
   },
   illuminationBar: {
-    height: 8,
+    height: 10,
     backgroundColor: '#ffd700',
     borderRadius: 4,
     alignSelf: 'flex-start',
@@ -439,9 +446,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#ffd700', // gold text
+    color: '#003366', // gold text
     marginLeft: 10,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 1, height: 1 },
+    textShadowOffset: {width: 1, height: 1},
     textShadowRadius: 3,
   },
   weatherGradient: {
@@ -449,7 +457,9 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(255, 215, 0, 0.2)', // subtle gold border
   },
   weatherContent: {
-    padding: 20,
+    // padding: 20,
+    paddingBottom: 10,
+    paddingTop: 10,
   },
   iconBackground: {
     padding: 15,
@@ -461,7 +471,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 15,
+    marginBottom: '15%',
   },
   temperatureContainer: {
     flexDirection: 'row',
@@ -473,7 +483,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#003366', // deep ocean blue
     textShadowColor: 'rgba(0, 0, 0, 0.1)',
-    textShadowOffset: { width: 1, height: 1 },
+    textShadowOffset: {width: 1, height: 1},
     textShadowRadius: 2,
   },
   celsiusLabel: {
@@ -489,7 +499,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 5,
     textShadowColor: 'rgba(0, 0, 0, 0.1)',
-    textShadowOffset: { width: 1, height: 1 },
+    textShadowOffset: {width: 1, height: 1},
     textShadowRadius: 2,
   },
   weatherDescriptionText: {
@@ -501,25 +511,28 @@ const styles = StyleSheet.create({
   },
   weatherDetailsCard: {
     borderRadius: 15,
-    padding: 15,
-    marginTop: 10,
+    paddingTop: 10,
+    // marginTop: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255, 215, 0, 0.3)', // subtle gold border
+    borderColor: 'rgba(255, 215, 0, 0.8)', // subtle gold border
+    paddingHorizontal:10
   },
   weatherDetailsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
+    // alignItems: 'center',
+    paddingTop: 50,
   },
   weatherDetailItem: {
     alignItems: 'center',
     flex: 1,
-    padding: 10,
+    padding: 15,
   },
   verticalDivider: {
-    width: 1,
+    width: 2,
     height: '80%',
     backgroundColor: 'rgba(0, 51, 102, 0.2)', // subtle ocean blue divider
+    
   },
   detailLabel: {
     fontSize: 16,
