@@ -13,6 +13,7 @@ import {
 import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
+import LinearGradient from 'react-native-linear-gradient';
 
 const API_KEY = 'da09552db9dee8853551090775811fb7'; // Get from openweathermap.org
 
@@ -109,136 +110,161 @@ const TabWeatherScreen = () => {
   }
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      {weatherData && (
-        <View style={styles.weatherContainer}>
-          {/* Location Header */}
-          <View style={styles.locationHeader}>
-            <Text style={styles.location}>{weatherData.name}, {weatherData.sys.country}</Text>
-            <Text style={styles.coordinates}>
-              {weatherData.coord.lat.toFixed(2)}°N, {weatherData.coord.lon.toFixed(2)}°W
-            </Text>
-          </View>
-
-          {/* Main Weather */}
-          <View style={styles.mainWeather}>
-            <Icon 
-              name={getWeatherIcon(weatherData.weather[0].id)} 
-              size={80} 
-              color="#333" 
-            />
-            <View style={styles.tempContainer}>
-              <Text style={styles.temperature}>{Math.round(weatherData.main.temp)}°C</Text>
-              <Text style={styles.weatherDescription}>
-                {weatherData.weather[0].description.charAt(0).toUpperCase() + 
-                 weatherData.weather[0].description.slice(1)}
+    <LinearGradient
+      colors={['#003366', '#004d99', '#0066cc']} // Deep blue to lighter blue
+      style={styles.mainContainer}
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 1}}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh}
+            tintColor="#fff"
+            colors={["#ffd700"]}
+          />
+        }
+      >
+        {weatherData && (
+          <View style={styles.weatherContainer}>
+            {/* Location Header */}
+            <View style={styles.locationHeader}>
+              <Text style={styles.location}>{weatherData.name}, {weatherData.sys.country}</Text>
+              <Text style={styles.coordinates}>
+                {weatherData.coord.lat.toFixed(2)}°N, {weatherData.coord.lon.toFixed(2)}°W
               </Text>
             </View>
-          </View>
 
-          {/* Temperature Details */}
-          <View style={styles.tempDetails}>
-            <View style={styles.tempItem}>
-              <Text style={styles.tempLabel}>Feels Like</Text>
-              <Text style={styles.tempValue}>{Math.round(weatherData.main.feels_like)}°C</Text>
-            </View>
-            <View style={styles.tempItem}>
-              <Text style={styles.tempLabel}>Min</Text>
-              <Text style={styles.tempValue}>{Math.round(weatherData.main.temp_min)}°C</Text>
-            </View>
-            <View style={styles.tempItem}>
-              <Text style={styles.tempLabel}>Max</Text>
-              <Text style={styles.tempValue}>{Math.round(weatherData.main.temp_max)}°C</Text>
-            </View>
-          </View>
-
-          {/* Weather Details Grid */}
-          <View style={styles.detailsGrid}>
-            <View style={styles.detailBox}>
-              <Icon name="water-percent" size={24} color="#666" />
-              <Text style={styles.detailLabel}>Humidity</Text>
-              <Text style={styles.detailValue}>{weatherData.main.humidity}%</Text>
-            </View>
-
-            <View style={styles.detailBox}>
-              <Icon name="weather-windy" size={24} color="#666" />
-              <Text style={styles.detailLabel}>Wind Speed</Text>
-              <Text style={styles.detailValue}>{Math.round(weatherData.wind.speed * 3.6)} km/h</Text>
-            </View>
-
-            <View style={styles.detailBox}>
-              <Icon name="gauge" size={24} color="#666" />
-              <Text style={styles.detailLabel}>Pressure</Text>
-              <Text style={styles.detailValue}>{weatherData.main.pressure} hPa</Text>
-            </View>
-
-            <View style={styles.detailBox}>
-              <Icon name="eye" size={24} color="#666" />
-              <Text style={styles.detailLabel}>Visibility</Text>
-              <Text style={styles.detailValue}>{(weatherData.visibility / 1000).toFixed(1)} km</Text>
-            </View>
-          </View>
-
-          {/* Additional Details */}
-          <View style={styles.additionalDetails}>
-            <Text style={styles.sectionTitle}>Additional Information</Text>
-            <View style={styles.additionalDetailsGrid}>
-              <View style={styles.additionalDetailBox}>
-                <Icon name="cloud" size={24} color="#003366" />
-                <Text style={styles.additionalDetailLabel}>Cloud Cover</Text>
-                <Text style={styles.additionalDetailValue}>{weatherData.clouds.all}%</Text>
+            {/* Main Weather */}
+            <View style={styles.mainWeather}>
+              <Icon 
+                name={getWeatherIcon(weatherData.weather[0].id)} 
+                size={80} 
+                color="#333" 
+              />
+              <View style={styles.tempContainer}>
+                <Text style={styles.temperature}>{Math.round(weatherData.main.temp)}°C</Text>
+                <Text style={styles.weatherDescription}>
+                  {weatherData.weather[0].description.charAt(0).toUpperCase() + 
+                   weatherData.weather[0].description.slice(1)}
+                </Text>
               </View>
-              
-              {weatherData.wind.gust && (
+            </View>
+
+            {/* Temperature Details */}
+            <View style={styles.tempDetails}>
+              <View style={styles.tempItem}>
+                <Text style={styles.tempLabel}>Feels Like</Text>
+                <Text style={styles.tempValue}>{Math.round(weatherData.main.feels_like)}°C</Text>
+              </View>
+              <View style={styles.tempItem}>
+                <Text style={styles.tempLabel}>Min</Text>
+                <Text style={styles.tempValue}>{Math.round(weatherData.main.temp_min)}°C</Text>
+              </View>
+              <View style={styles.tempItem}>
+                <Text style={styles.tempLabel}>Max</Text>
+                <Text style={styles.tempValue}>{Math.round(weatherData.main.temp_max)}°C</Text>
+              </View>
+            </View>
+
+            {/* Weather Details Grid */}
+            <View style={styles.detailsGrid}>
+              <View style={styles.detailBox}>
+                <Icon name="water-percent" size={24} color="#666" />
+                <Text style={styles.detailLabel}>Humidity</Text>
+                <Text style={styles.detailValue}>{weatherData.main.humidity}%</Text>
+              </View>
+
+              <View style={styles.detailBox}>
+                <Icon name="weather-windy" size={24} color="#666" />
+                <Text style={styles.detailLabel}>Wind Speed</Text>
+                <Text style={styles.detailValue}>{Math.round(weatherData.wind.speed * 3.6)} km/h</Text>
+              </View>
+
+              <View style={styles.detailBox}>
+                <Icon name="gauge" size={24} color="#666" />
+                <Text style={styles.detailLabel}>Pressure</Text>
+                <Text style={styles.detailValue}>{weatherData.main.pressure} hPa</Text>
+              </View>
+
+              <View style={styles.detailBox}>
+                <Icon name="eye" size={24} color="#666" />
+                <Text style={styles.detailLabel}>Visibility</Text>
+                <Text style={styles.detailValue}>{(weatherData.visibility / 1000).toFixed(1)} km</Text>
+              </View>
+            </View>
+
+            {/* Additional Details */}
+            <View style={styles.additionalDetails}>
+              <Text style={styles.sectionTitle}>Additional Information</Text>
+              <View style={styles.additionalDetailsGrid}>
                 <View style={styles.additionalDetailBox}>
-                  <Icon name="weather-windy" size={24} color="#003366" />
-                  <Text style={styles.additionalDetailLabel}>Wind Gust</Text>
-                  <Text style={styles.additionalDetailValue}>
-                    {Math.round(weatherData.wind.gust * 3.6)} km/h
-                  </Text>
+                  <Icon name="cloud" size={24} color="#003366" />
+                  <Text style={styles.additionalDetailLabel}>Cloud Cover</Text>
+                  <Text style={styles.additionalDetailValue}>{weatherData.clouds.all}%</Text>
                 </View>
-              )}
+                
+                {weatherData.wind.gust && (
+                  <View style={styles.additionalDetailBox}>
+                    <Icon name="weather-windy" size={24} color="#003366" />
+                    <Text style={styles.additionalDetailLabel}>Wind Gust</Text>
+                    <Text style={styles.additionalDetailValue}>
+                      {Math.round(weatherData.wind.gust * 3.6)} km/h
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
           </View>
-        </View>
-      )}
-    </ScrollView>
+        )}
+      </ScrollView>
+        <View style={styles.bottomPadding} />
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
-    backgroundColor: '#f0f8ff', // Light blue background
-    paddingTop: 40,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    // paddingVertical: 16,
+    paddingTop: 60,
+  },
+  bottomPadding: {
+    height: 120, // Adds some padding at the bottom of the scroll
   },
   weatherContainer: {
-    margin: 16,
+    marginHorizontal: 16,
+    marginBottom: 16,
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)', // Slightly transparent white
     borderRadius: 16,
-    shadowColor: '#003366',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
     borderWidth: 1,
-    borderColor: 'rgba(255, 215, 0, 0.3)', // Subtle gold border
+    borderColor: 'rgba(255, 215, 0, 0.3)',
   },
   locationHeader: {
     alignItems: 'center',
     marginBottom: 20,
     padding: 10,
-    backgroundColor: '#003366',
+    backgroundColor: 'rgba(0, 51, 102, 0.8)', // More transparent
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
   },
   location: {
@@ -320,16 +346,16 @@ const styles = StyleSheet.create({
   },
   detailBox: {
     width: '48%',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(0, 51, 102, 0.1)',
-    shadowColor: '#003366',
+    borderColor: 'rgba(255, 215, 0, 0.2)',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 3,
   },
@@ -347,14 +373,14 @@ const styles = StyleSheet.create({
   },
   additionalDetails: {
     marginTop: 10,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 215, 0, 0.3)', // Subtle gold border
-    shadowColor: '#003366',
+    borderColor: 'rgba(255, 215, 0, 0.3)',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 3,
   },
@@ -379,6 +405,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 215, 0, 0.2)',
+    backdropFilter: 'blur(10px)', // Note: This works on iOS, for Android you might need extra setup
   },
   additionalDetailLabel: {
     fontSize: 14,
