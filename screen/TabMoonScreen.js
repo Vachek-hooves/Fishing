@@ -136,79 +136,56 @@ const TabMoonScreen = () => {
     if (!location || !selectedMoonPhase?.weather) return null;
 
     return (
-      <View style={styles.currentDateContainer}>
-        {/* Ocean-themed Date Header */}
-        <LinearGradient
-          colors={['#e6f9ff', '#cce6ff', '#b3d9ff']}
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}
-          style={styles.dateHeaderGradient}>
-          <View style={styles.dateHeaderContent}>
-            <Icon name="calendar-clock" size={28} color="#003366" />
-            <Text style={styles.currentDateText}>{formatCurrentDate()}</Text>
-          </View>
-        </LinearGradient>
+      <View style={styles.weatherContainer}>
+        {/* Date Header */}
+        <View style={styles.dateHeader}>
+          <Icon name="calendar-month" size={20} color="#003366" />
+          <Text style={styles.dateText}>{formatCurrentDate()}</Text>
+        </View>
 
-        {/* Weather Card with Ocean Theme */}
-        <LinearGradient
-          colors={['#e6f3ff', '#cce6ff', '#b3d9ff']}
-          style={styles.weatherGradient}>
-          <View style={styles.weatherContent}>
-            <View style={styles.weatherIconContainer}>
-              <LinearGradient
-                colors={['rgba(0, 102, 204, 0.1)', 'rgba(0, 102, 204, 0.3)']}
-                style={styles.iconBackground}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 1}}>
-                <Icon
-                  name={getWeatherIcon(selectedMoonPhase.weather.weather[0].id)}
-                  size={80}
-                  color="#003366"
-                />
-              </LinearGradient>
-              <View style={styles.temperatureContainer}>
-                <Text style={styles.bigTemperature}>
-                  {Math.round(selectedMoonPhase.weather.main.temp)}°
-                </Text>
-                <Text style={styles.celsiusLabel}>C</Text>
-              </View>
-            </View>
-
-            <Text style={styles.weatherMainText}>
+        {/* Temperature and Weather Main */}
+        <View style={styles.mainWeatherInfo}>
+          <Text style={styles.temperature}>
+            {Math.round(selectedMoonPhase.weather.main.temp)}°
+            <Text style={styles.temperatureUnit}>C</Text>
+          </Text>
+          
+          <View style={styles.weatherIconWrapper}>
+            <Icon
+              name={getWeatherIcon(selectedMoonPhase.weather.weather[0].id)}
+              size={50}
+              color="#003366"
+            />
+            <Text style={styles.weatherMain}>
               {selectedMoonPhase.weather.weather[0].main}
             </Text>
-            <Text style={styles.weatherDescriptionText}>
-              {selectedMoonPhase.weather.weather[0].description
-                .charAt(0)
-                .toUpperCase() +
-                selectedMoonPhase.weather.weather[0].description.slice(1)}
-            </Text>
-
-            {/* Weather Details Card with Ocean Theme */}
-            <LinearGradient
-              colors={['rgba(255, 255, 255, 0.5)', 'rgba(230, 243, 255, 0.9)']}
-              style={styles.weatherDetailsCard}>
-              <View style={styles.weatherDetailsRow}>
-                <View style={styles.weatherDetailItem}>
-                  <Icon name="water-percent" size={30} color="#003366" />
-                  <Text style={styles.detailLabel}>Humidity</Text>
-                  <Text style={styles.detailValue}>
-                    {selectedMoonPhase.weather.main.humidity}%
-                  </Text>
-                </View>
-                <View style={styles.verticalDivider} />
-                <View style={styles.weatherDetailItem}>
-                  <Icon name="weather-windy" size={30} color="#003366" />
-                  <Text style={styles.detailLabel}>Wind Speed</Text>
-                  <Text style={styles.detailValue}>
-                    {Math.round(selectedMoonPhase.weather.wind.speed * 3.6)}{' '}
-                    km/h
-                  </Text>
-                </View>
-              </View>
-            </LinearGradient>
           </View>
-        </LinearGradient>
+        </View>
+
+        {/* Weather Details */}
+        <View style={styles.detailsContainer}>
+          <View style={styles.detailItem}>
+            <Icon name="water-percent" size={24} color="#003366" />
+            <View style={styles.detailText}>
+              <Text style={styles.detailLabel}>Humidity</Text>
+              <Text style={styles.detailValue}>
+                {selectedMoonPhase.weather.main.humidity}%
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.detailItem}>
+            <Icon name="weather-windy" size={24} color="#003366" />
+            <View style={styles.detailText}>
+              <Text style={styles.detailLabel}>Wind Speed</Text>
+              <Text style={styles.detailValue}>
+                {Math.round(selectedMoonPhase.weather.wind.speed * 3.6)} km/h
+              </Text>
+            </View>
+          </View>
+        </View>
       </View>
     );
   };
@@ -545,6 +522,99 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#003366',
     marginTop: 5,
+  },
+  weatherContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 16,
+    margin: 15,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+
+  dateHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 51, 102, 0.1)',
+  },
+
+  dateText: {
+    marginLeft: 8,
+    fontSize: 16,
+    color: '#003366',
+    fontWeight: '500',
+  },
+
+  mainWeatherInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+
+  temperature: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#003366',
+  },
+
+  temperatureUnit: {
+    fontSize: 24,
+    fontWeight: '500',
+  },
+
+  weatherIconWrapper: {
+    alignItems: 'center',
+  },
+
+  weatherMain: {
+    marginTop: 4,
+    fontSize: 16,
+    color: '#003366',
+    fontWeight: '500',
+  },
+
+  detailsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 51, 102, 0.1)',
+  },
+
+  detailItem: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  detailText: {
+    marginLeft: 8,
+  },
+
+  detailLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 2,
+  },
+
+  detailValue: {
+    fontSize: 16,
+    color: '#003366',
+    fontWeight: '500',
+  },
+
+  divider: {
+    width: 1,
+    height: '100%',
+    backgroundColor: 'rgba(0, 51, 102, 0.1)',
+    marginHorizontal: 16,
   },
 });
 
