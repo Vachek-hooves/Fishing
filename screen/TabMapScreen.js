@@ -21,6 +21,72 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'react-native-image-picker';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
+import Fish from 'react-native-vector-icons/Ionicons'
+
+const waterOrientedMapStyle = [
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f5f5f5"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#004B87"  // Deeper blue for water
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#c8e6c9"  // Light green for parks
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#6b9a76"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#ffffff"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape.natural",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#e8f5e9"  // Very light green for natural areas
+      }
+    ]
+  }
+];
 
 const TabMapScreen = () => {
   const [markers, setMarkers] = useState([]);
@@ -268,6 +334,11 @@ const TabMapScreen = () => {
           showsUserLocation={true}
           showsMyLocationButton={true}
           onLongPress={handleMapLongPress}
+          customMapStyle={waterOrientedMapStyle}
+          mapType="terrain"
+          showsBuildings={false}
+          showsTraffic={false}
+          showsIndoors={false}
           onMapReady={() => {
             console.log('Map is ready');
           }}
@@ -279,7 +350,16 @@ const TabMapScreen = () => {
               title={marker.title}
               description={marker.description}
               onPress={() => handleMarkerPress(marker)}
-            />
+            >
+              <View style={styles.markerContainer}>
+                <Fish name="fish" size={40} color="#08313a" />
+                {marker.title && (
+                  <View style={styles.markerLabelContainer}>
+                    <Text style={styles.markerLabel}>{marker.title}</Text>
+                  </View>
+                )}
+              </View>
+            </Marker>
           ))}
         </MapView>
       )}
@@ -592,6 +672,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginLeft: 10,
+  },
+  markerContainer: {
+    alignItems: 'center',
+  },
+  markerLabelContainer: {
+    backgroundColor: 'white',
+    borderRadius: 4,
+    padding: 4,
+    marginTop: 4,
+    borderWidth: 1,
+    borderColor: '#004B87',
+  },
+  markerLabel: {
+    color: '#004B87',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
 
