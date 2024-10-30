@@ -426,6 +426,7 @@ const TabMoonScreen = () => {
               />
             </>
           )}
+          <View style={{height: 100}}></View>
         </ScrollView>
       </LinearGradient>
     </SafeAreaView>
