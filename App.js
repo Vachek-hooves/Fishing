@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -12,15 +12,51 @@ import {
   TabUserScreen,
 } from './screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntIcon from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
-import {View} from 'react-native';
-import {setupPlayer,playBackgroundMusic,pauseBackgroundMusic} from './components/sound/setPlayer';
+import {View, AppState, TouchableOpacity, Text} from 'react-native';
+import {
+  setupPlayer,
+  playBackgroundMusic,
+  pauseBackgroundMusic,
+  toggleBackgroundMusic,
+} from './components/sound/setPlayer';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabScreens = () => {
   const [focusedScreen, setFocusedScreen] = useState('TabMapScreen');
+  const [isSoundOn, setIsSoundOn] = useState(true);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active' && isSoundOn) {
+        playBackgroundMusic();
+      } else if (nextAppState === 'background' || nextAppState === 'inactive') {
+        pauseBackgroundMusic();
+      }
+    });
+
+    // Initialize sound when app starts
+    const initSound = async () => {
+      await setupPlayer();
+      await playBackgroundMusic();
+      setIsSoundOn(true);
+    };
+
+    initSound();
+
+    return () => {
+      subscription.remove();
+      pauseBackgroundMusic();
+    };
+  }, []);
+
+  const handleSoundToggle = () => {
+    const newState = toggleBackgroundMusic();
+    setIsSoundOn(newState);
+  };
 
   const getTabBarGradient = () => {
     switch (focusedScreen) {
@@ -141,9 +177,43 @@ const TabScreens = () => {
           ),
         }}
       />
+      <Tab.Screen
+        name="Sound"
+        component={BlankScreen}
+        options={{
+          tabBarLabel: 'Sound',
+          tabBarButton: props => (
+            <TouchableOpacity
+              {...props}
+              onPress={handleSoundToggle}
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: 10,
+              }}>
+              <AntIcon
+                name="sound"
+                color={isSoundOn ? 'green' : 'red'}
+                size={45}
+              />
+              <Text
+                style={{
+                  color: isSoundOn ? 'green' : 'red',
+                  fontSize: 12,
+                  fontWeight: '600',
+                  marginTop: 10,
+                }}>
+                Sound
+              </Text>
+            </TouchableOpacity>
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };
+const BlankScreen = () => null;
 
 const styles = {
   tabBar: {
