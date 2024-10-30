@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {AppProvider} from './store/context';
-import {TabMapScreen, WelcomeScreen,TabMoonScreen,TabWeatherScreen,TabSpotsScreen} from './screen';
+import {
+  TabMapScreen,
+  WelcomeScreen,
+  TabMoonScreen,
+  TabWeatherScreen,
+  TabSpotsScreen,
+  TabUserScreen,
+} from './screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import {View} from 'react-native';
+import {setupPlayer,playBackgroundMusic,pauseBackgroundMusic} from './components/sound/setPlayer';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,38 +39,35 @@ const TabScreens = () => {
         tabBarBackground: () => (
           <LinearGradient
             colors={getTabBarGradient()}
-            style={{ height: '100%' }}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
+            style={{height: '100%'}}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
           />
         ),
-        tabBarActiveTintColor: focusedScreen === 'TabMoonScreen' ? '#003366' : '#ffd700',
-        tabBarInactiveTintColor: focusedScreen === 'TabMoonScreen' 
-          ? 'rgba(0, 51, 102, 0.5)' 
-          : 'rgba(255, 215, 0, 0.5)',
+        tabBarActiveTintColor:
+          focusedScreen === 'TabMoonScreen' ? '#003366' : '#ffd700',
+        tabBarInactiveTintColor:
+          focusedScreen === 'TabMoonScreen'
+            ? 'rgba(0, 51, 102, 0.5)'
+            : 'rgba(255, 215, 0, 0.5)',
       }}
       screenListeners={{
-        state: (e) => {
+        state: e => {
           const route = e.data.state.routes[e.data.state.index];
           setFocusedScreen(route.name);
         },
-      }}
-    >
+      }}>
       <Tab.Screen
         name="TabMapScreen"
         component={TabMapScreen}
         options={{
-          tabBarIcon: ({color,  focused}) => (
-         
+          tabBarIcon: ({color, focused}) => (
             <View style={styles.iconContainer}>
-              <Icon 
-                name="map-marker" 
-                color={color} 
+              <Icon
+                name="map-marker"
+                color={color}
                 size={34} // Explicit size
-                style={[
-                  styles.icon,
-                  focused && styles.activeIcon
-                ]}
+                style={[styles.icon, focused && styles.activeIcon]}
               />
               {focused && <View style={styles.activeIndicator} />}
             </View>
@@ -76,14 +81,11 @@ const TabScreens = () => {
         options={{
           tabBarIcon: ({color, focused}) => (
             <View style={styles.iconContainer}>
-              <Icon 
-                name="moon-waning-crescent" 
-                color={color} 
+              <Icon
+                name="moon-waning-crescent"
+                color={color}
                 size={34} // Explicit size
-                style={[
-                  styles.icon,
-                  focused && styles.activeIcon
-                ]}
+                style={[styles.icon, focused && styles.activeIcon]}
               />
               {focused && <View style={styles.activeIndicator} />}
             </View>
@@ -97,20 +99,16 @@ const TabScreens = () => {
         options={{
           tabBarIcon: ({color, focused}) => (
             <View style={styles.iconContainer}>
-              <Icon 
-                name="weather-sunny" 
-                color={color} 
-                size={34}// Explicit size
-                style={[
-                  styles.icon,
-                  focused && styles.activeIcon
-                ]}
+              <Icon
+                name="weather-sunny"
+                color={color}
+                size={34} // Explicit size
+                style={[styles.icon, focused && styles.activeIcon]}
               />
               {focused && <View style={styles.activeIndicator} />}
             </View>
           ),
           tabBarLabel: 'Weather',
-          
         }}
       />
       <Tab.Screen
@@ -119,19 +117,28 @@ const TabScreens = () => {
         options={{
           tabBarIcon: ({color, focused}) => (
             <View style={styles.iconContainer}>
-              <Icon 
-                name="map-marker-radius" 
-                color={color} 
+              <Icon
+                name="map-marker-radius"
+                color={color}
                 size={34} // Explicit size
-                style={[
-                  styles.icon,
-                  focused && styles.activeIcon
-                ]}
+                style={[styles.icon, focused && styles.activeIcon]}
               />
               {focused && <View style={styles.activeIndicator} />}
             </View>
           ),
           tabBarLabel: 'Spots',
+        }}
+      />
+      <Tab.Screen
+        name="TabUserScreen"
+        component={TabUserScreen}
+        options={{
+          tabBarLabel: 'User',
+          tabBarIcon: ({color, focused}) => (
+            <View style={styles.iconContainer}>
+              <Icon name="account" color={color} size={34} />
+            </View>
+          ),
         }}
       />
     </Tab.Navigator>
@@ -142,9 +149,9 @@ const styles = {
   tabBar: {
     height: 95,
     position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
+    bottom: 20,
+    left: 5,
+    right: 5,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#ffd700',
@@ -158,7 +165,6 @@ const styles = {
     shadowRadius: 4.65,
     overflow: 'hidden',
     paddingBottom: 15,
-    
   },
   tabBarLabel: {
     fontSize: 12,
@@ -176,12 +182,11 @@ const styles = {
   },
   icon: {
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
+    textShadowOffset: {width: 1, height: 1},
     textShadowRadius: 2,
-    
   },
   activeIcon: {
-    transform: [{ scale: 1.3 }],
+    transform: [{scale: 1.3}],
   },
   activeIndicator: {
     position: 'absolute',
@@ -189,7 +194,8 @@ const styles = {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: props => props.focused === 'TabMoonScreen' ? '#003366' : '#ffd700',
+    backgroundColor: props =>
+      props.focused === 'TabMoonScreen' ? '#003366' : '#ffd700',
   },
 };
 
