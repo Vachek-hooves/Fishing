@@ -26,7 +26,7 @@ const WelcomeScreen = () => {
   }, []);
 
   return (
-    <ImageBackground style={styles.container} source={require('../assets/fishWelcome.png')}>
+    <ImageBackground style={styles.container} source={require('../assets/bg.png')}>
       <LottieView
         source={require('../assets/lottieJson/fisherman.json')}
         autoPlay
@@ -45,7 +45,10 @@ const WelcomeScreen = () => {
           }
         ]}
       >
-        Welcome to Ultimate Fishing Diary
+        Welcome{'\n'}to{'\n'}
+        <Text style={{ fontSize: 42, color: '#FFD700' }}>
+          Ultimate{'\n'}Fishing Diary
+        </Text>
       </Animated.Text>
     </ImageBackground>
   )
@@ -64,12 +67,26 @@ const styles = StyleSheet.create({
     height: height * 0.5,
   },
   welcomeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 36,
+    fontWeight: '900',
     color: '#fff',
+    textAlign: 'center',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
+    textShadowOffset: { width: -2, height: 2 },
+    textShadowRadius: 15,
+    
+    elevation: 5,
+    
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    
     position: 'absolute',
+    paddingHorizontal: 20,
+    width: width * 0.9,
   }
 })
