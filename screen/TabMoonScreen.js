@@ -275,13 +275,14 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    paddingTop: 50,
   },
   content: {
     padding: 10,
   },
   calendarStrip: {
     marginTop: 50,
-    height: 130,
+    height: 150,
     paddingTop: 10,
     paddingBottom: 10,
     backgroundColor: '#f5f8ff', // Light blue background
