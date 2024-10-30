@@ -66,11 +66,14 @@ const styles = StyleSheet.create({
   },
   animationContainer: {
     position: 'absolute',
-    top: height * 0.15,
+    top: height * 0.3,
   },
   animation: {
     width: width,
-    height: height * 0.5,
+    height: height * 0.4,
+    transform: [
+      { scaleX: -1 }  // This will flip the animation horizontally
+    ]
   },
   welcomeText: {
     fontSize: 36,
