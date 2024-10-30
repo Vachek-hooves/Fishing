@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View, Dimensions, ImageBackground, Animated } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import LottieView from 'lottie-react-native'
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
 const WelcomeScreen = () => {
+  const navigation = useNavigation();
   const slideAnim = useRef(new Animated.ValueXY({ x: -width, y: height/2 })).current;
 
   useEffect(() => {
@@ -22,7 +24,12 @@ const WelcomeScreen = () => {
         duration: 1500,
         useNativeDriver: true,
       })
-    ]).start();
+    ]).start(() => {
+      // Navigate to TabScreens after 1 second of animation completion
+      setTimeout(() => {
+        navigation.replace('TabScreens');
+      }, 1000);
+    });
   }, []);
 
   return (
