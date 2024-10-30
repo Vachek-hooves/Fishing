@@ -56,6 +56,7 @@ const TabMoonScreen = () => {
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&dt=${timestamp}&units=metric&appid=${API_KEY}`,
       );
       const data = await response.json();
+      // console.log(data)
       return data;
     } catch (error) {
       console.error('Weather fetch error:', error);
