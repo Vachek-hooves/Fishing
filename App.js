@@ -203,8 +203,8 @@ function App() {
             animation: 'fade',
             animationDuration: 1000,
           }}>
-          <Stack.Screen name="TabScreens" component={TabScreens} />
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+          <Stack.Screen name="TabScreens" component={TabScreens} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppProvider>
