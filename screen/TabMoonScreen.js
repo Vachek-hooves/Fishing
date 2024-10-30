@@ -355,6 +355,7 @@ const TabMoonScreen = () => {
             }}
           />
         </View>
+        
 
         <ScrollView
           style={styles.scrollView}
@@ -445,6 +446,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingHorizontal: 10,
     backgroundColor: 'transparent',
+    marginBottom: 10,
   },
   calendarStrip: {
     height: 120,
