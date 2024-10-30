@@ -14,33 +14,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Fish from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
+import { useAppContext } from '../store/context';
 
 const { width } = Dimensions.get('window');
 
 const TabSpotsScreen = () => {
-  const [spots, setSpots] = useState([]);
+  const { spots, updateSpots } = useAppContext();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    loadSpots();
-  }, []);
-
-  const loadSpots = async () => {
+  const onRefresh = async () => {
+    setRefreshing(true);
     try {
       const savedSpots = await AsyncStorage.getItem('fishingSpots');
       if (savedSpots) {
-        setSpots(JSON.parse(savedSpots));
+        updateSpots(JSON.parse(savedSpots));
       }
     } catch (error) {
-      console.error('Error loading spots:', error);
+      console.error('Error refreshing spots:', error);
     }
-  };
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadSpots();
     setRefreshing(false);
   };
 

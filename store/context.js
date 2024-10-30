@@ -6,12 +6,17 @@ const AppContext = createContext();
 // Create a provider component
 export function AppProvider({ children }) {
     // Define your state values here
-    const [someValue, setSomeValue] = useState('default value');
+    const [spots, setSpots] = useState([]);
     
+    // Add function to update spots
+    const updateSpots = async (newSpots) => {
+        setSpots(newSpots);
+    };
+
     // Create an object with all values and functions you want to share
     const value = {
-        someValue,
-        setSomeValue,
+        spots,
+        updateSpots,
         // Add more state and functions as needed
     };
 

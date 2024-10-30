@@ -22,6 +22,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'react-native-image-picker';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
 import Fish from 'react-native-vector-icons/Ionicons'
+import { useAppContext } from '../store/context';
 
 const waterOrientedMapStyle = [
   {
@@ -89,6 +90,7 @@ const waterOrientedMapStyle = [
 ];
 
 const TabMapScreen = () => {
+  const { updateSpots } = useAppContext();
   const [markers, setMarkers] = useState([]);
   const [initialRegion, setInitialRegion] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -197,7 +199,9 @@ const TabMapScreen = () => {
     try {
       const savedMarkers = await AsyncStorage.getItem('fishingSpots');
       if (savedMarkers) {
-        setMarkers(JSON.parse(savedMarkers));
+        const parsedMarkers = JSON.parse(savedMarkers);
+        setMarkers(parsedMarkers);
+        updateSpots(parsedMarkers);
       }
     } catch (error) {
       console.error('Error loading markers:', error);
@@ -286,6 +290,7 @@ const TabMapScreen = () => {
     setMarkers(updatedMarkers);
     try {
       await AsyncStorage.setItem('fishingSpots', JSON.stringify(updatedMarkers));
+      updateSpots(updatedMarkers);
       setModalVisible(false);
     } catch (error) {
       console.error('Error saving marker:', error);
@@ -298,6 +303,7 @@ const TabMapScreen = () => {
     setMarkers(updatedMarkers);
     try {
       await AsyncStorage.setItem('fishingSpots', JSON.stringify(updatedMarkers));
+      updateSpots(updatedMarkers);
       setModalVisible(false);
     } catch (error) {
       console.error('Error deleting marker:', error);
