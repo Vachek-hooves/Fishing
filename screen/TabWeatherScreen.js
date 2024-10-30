@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f8ff', // Light blue background
+    paddingTop: 40,
   },
   weatherContainer: {
     margin: 16,
