@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -18,82 +18,55 @@ import { useAppContext } from '../store/context';
 
 const { width } = Dimensions.get('window');
 
-const TabSpotsScreen = () => {
-  const { spots, updateSpots } = useAppContext();
-  const [refreshing, setRefreshing] = useState(false);
-  const [selectedSpot, setSelectedSpot] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    try {
-      const savedSpots = await AsyncStorage.getItem('fishingSpots');
-      if (savedSpots) {
-        updateSpots(JSON.parse(savedSpots));
-      }
-    } catch (error) {
-      console.error('Error refreshing spots:', error);
-    }
-    setRefreshing(false);
-  };
-
-  const handleSpotPress = useCallback((spot) => {
-    setSelectedSpot(spot);
-    setModalVisible(true);
-  }, []);
-
-  const handleCloseModal = useCallback(() => {
-    setModalVisible(false);
-    setTimeout(() => setSelectedSpot(null), 300);
-  }, []);
-
-  const SpotCard = React.memo(({ spot }) => (
-    <TouchableOpacity 
-      style={styles.card}
-      onPress={() => handleSpotPress(spot)}
-      activeOpacity={0.7}
-      delayPressIn={0}
+// Separate SpotCard component
+const SpotCard = ({ spot, onPress }) => (
+  <TouchableOpacity 
+    style={styles.card}
+    onPress={() => onPress(spot)}
+    activeOpacity={0.7}
+  >
+    <LinearGradient
+      colors={['#004B87', '#006494']}
+      style={styles.cardGradient}
     >
-      <LinearGradient
-        colors={['#004B87', '#006494']}
-        style={styles.cardGradient}
-      >
-        <View style={styles.cardContent}>
-          <View style={styles.titleContainer}>
-            <Fish name="fish" size={24} color="#ffd700" />
-            <Text style={styles.cardTitle}>{spot.title}</Text>
-          </View>
-          <View style={styles.coordinatesContainer}>
-            <Icon name="location-on" size={16} color="#ffd700" />
-            <Text style={styles.coordinates}>
-              {spot.coordinate.latitude.toFixed(6)}, {spot.coordinate.longitude.toFixed(6)}
-            </Text>
-          </View>
+      <View style={styles.cardContent}>
+        <View style={styles.titleContainer}>
+          <Fish name="fish" size={24} color="#ffd700" />
+          <Text style={styles.cardTitle}>{spot.title}</Text>
         </View>
-      </LinearGradient>
-    </TouchableOpacity>
-  ));
+        <View style={styles.coordinatesContainer}>
+          <Icon name="location-on" size={16} color="#ffd700" />
+          <Text style={styles.coordinates}>
+            {spot.coordinate.latitude.toFixed(6)}, {spot.coordinate.longitude.toFixed(6)}
+          </Text>
+        </View>
+      </View>
+    </LinearGradient>
+  </TouchableOpacity>
+);
 
-  const SpotDetailModal = useCallback(() => (
+// Separate Modal component
+const SpotDetailModal = ({ visible, spot, onClose }) => {
+  if (!spot) return null;
+  
+  return (
     <Modal
-      visible={modalVisible}
+      visible={visible}
       animationType="slide"
       transparent={true}
-      onRequestClose={handleCloseModal}
+      onRequestClose={onClose}
       statusBarTranslucent
-      hardwareAccelerated
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <ScrollView 
             showsVerticalScrollIndicator={false}
             bounces={false}
-            overScrollMode="never"
           >
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{selectedSpot?.title}</Text>
+              <Text style={styles.modalTitle}>{spot.title}</Text>
               <TouchableOpacity 
-                onPress={handleCloseModal}
+                onPress={onClose}
                 style={styles.closeButton}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
@@ -104,28 +77,26 @@ const TabSpotsScreen = () => {
             <View style={styles.modalCoordinates}>
               <Icon name="location-on" size={20} color="#003366" />
               <Text style={styles.modalCoordinatesText}>
-                {selectedSpot?.coordinate.latitude.toFixed(6)}, 
-                {selectedSpot?.coordinate.longitude.toFixed(6)}
+                {spot.coordinate.latitude.toFixed(6)}, 
+                {spot.coordinate.longitude.toFixed(6)}
               </Text>
             </View>
 
-            {selectedSpot?.description && (
+            {spot.description && (
               <View style={styles.descriptionContainer}>
                 <Text style={styles.descriptionTitle}>Description</Text>
-                <Text style={styles.descriptionText}>
-                  {selectedSpot.description}
-                </Text>
+                <Text style={styles.descriptionText}>{spot.description}</Text>
               </View>
             )}
 
-            {selectedSpot?.images && selectedSpot.images.length > 0 && (
+            {spot.images && spot.images.length > 0 && (
               <View style={styles.imagesContainer}>
                 <Text style={styles.imagesTitle}>Photos</Text>
                 <ScrollView 
                   horizontal 
                   showsHorizontalScrollIndicator={false}
                 >
-                  {selectedSpot.images.map((image, index) => (
+                  {spot.images.map((image, index) => (
                     <Image
                       key={index}
                       source={{ uri: image.uri }}
@@ -139,7 +110,38 @@ const TabSpotsScreen = () => {
         </View>
       </View>
     </Modal>
-  ), [modalVisible, selectedSpot, handleCloseModal]);
+  );
+};
+
+// Main component
+const TabSpotsScreen = () => {
+  const { spots, updateSpots } = useAppContext();
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedSpot, setSelectedSpot] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleSpotPress = useCallback((spot) => {
+    setSelectedSpot(spot);
+    setModalVisible(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setModalVisible(false);
+    setSelectedSpot(null);
+  }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const savedSpots = await AsyncStorage.getItem('fishingSpots');
+      if (savedSpots) {
+        updateSpots(JSON.parse(savedSpots));
+      }
+    } catch (error) {
+      console.error('Error refreshing spots:', error);
+    }
+    setRefreshing(false);
+  };
 
   return (
     <LinearGradient
@@ -166,10 +168,21 @@ const TabSpotsScreen = () => {
             </Text>
           </View>
         ) : (
-          spots.map(spot => <SpotCard key={spot.id} spot={spot} />)
+          spots.map(spot => (
+            <SpotCard 
+              key={spot.id} 
+              spot={spot} 
+              onPress={handleSpotPress}
+            />
+          ))
         )}
       </ScrollView>
-      <SpotDetailModal />
+
+      <SpotDetailModal
+        visible={modalVisible}
+        spot={selectedSpot}
+        onClose={handleCloseModal}
+      />
     </LinearGradient>
   );
 };
