@@ -90,8 +90,7 @@ const waterOrientedMapStyle = [
 ];
 
 const TabMapScreen = () => {
-  const { updateSpots } = useAppContext();
-  const [markers, setMarkers] = useState([]);
+  const { spots, updateSpots } = useAppContext();
   const [initialRegion, setInitialRegion] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -200,7 +199,6 @@ const TabMapScreen = () => {
       const savedMarkers = await AsyncStorage.getItem('fishingSpots');
       if (savedMarkers) {
         const parsedMarkers = JSON.parse(savedMarkers);
-        setMarkers(parsedMarkers);
         updateSpots(parsedMarkers);
       }
     } catch (error) {
@@ -278,19 +276,18 @@ const TabMapScreen = () => {
       images: markerImages,
     };
 
-    let updatedMarkers;
-    if (markers.find(m => m.id === selectedMarker.id)) {
-      updatedMarkers = markers.map(m => 
+    let updatedSpots;
+    if (spots.find(m => m.id === selectedMarker.id)) {
+      updatedSpots = spots.map(m => 
         m.id === selectedMarker.id ? updatedMarker : m
       );
     } else {
-      updatedMarkers = [...markers, updatedMarker];
+      updatedSpots = [...spots, updatedMarker];
     }
 
-    setMarkers(updatedMarkers);
     try {
-      await AsyncStorage.setItem('fishingSpots', JSON.stringify(updatedMarkers));
-      updateSpots(updatedMarkers);
+      await AsyncStorage.setItem('fishingSpots', JSON.stringify(updatedSpots));
+      updateSpots(updatedSpots);
       setModalVisible(false);
     } catch (error) {
       console.error('Error saving marker:', error);
@@ -299,11 +296,10 @@ const TabMapScreen = () => {
   };
 
   const deleteMarker = async () => {
-    const updatedMarkers = markers.filter(m => m.id !== selectedMarker.id);
-    setMarkers(updatedMarkers);
+    const updatedSpots = spots.filter(m => m.id !== selectedMarker.id);
     try {
-      await AsyncStorage.setItem('fishingSpots', JSON.stringify(updatedMarkers));
-      updateSpots(updatedMarkers);
+      await AsyncStorage.setItem('fishingSpots', JSON.stringify(updatedSpots));
+      updateSpots(updatedSpots);
       setModalVisible(false);
     } catch (error) {
       console.error('Error deleting marker:', error);
@@ -349,7 +345,7 @@ const TabMapScreen = () => {
             console.log('Map is ready');
           }}
         >
-          {markers.map((marker) => (
+          {spots.map((marker) => (
             <Marker
               key={marker.id}
               coordinate={marker.coordinate}

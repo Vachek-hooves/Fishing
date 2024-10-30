@@ -9,6 +9,7 @@ import {
   Dimensions,
   RefreshControl,
   Modal,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -46,8 +47,26 @@ const SpotCard = ({ spot, onPress }) => (
 );
 
 // Separate Modal component
-const SpotDetailModal = ({ visible, spot, onClose }) => {
+const SpotDetailModal = ({ visible, spot, onClose, onDelete }) => {
   if (!spot) return null;
+  
+  const handleDelete = () => {
+    Alert.alert(
+      'Delete Spot',
+      'Are you sure you want to delete this fishing spot?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => onDelete(spot.id)
+        }
+      ]
+    );
+  };
   
   return (
     <Modal
@@ -65,13 +84,22 @@ const SpotDetailModal = ({ visible, spot, onClose }) => {
           >
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{spot.title}</Text>
-              <TouchableOpacity 
-                onPress={onClose}
-                style={styles.closeButton}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Icon name="close" size={24} color="#003366" />
-              </TouchableOpacity>
+              <View style={styles.modalActions}>
+                <TouchableOpacity 
+                  onPress={handleDelete}
+                  style={[styles.actionButton, styles.deleteButton]}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Icon name="delete" size={24} color="#ff4444" />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={onClose}
+                  style={styles.actionButton}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Icon name="close" size={24} color="#003366" />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View style={styles.modalCoordinates}>
@@ -115,7 +143,7 @@ const SpotDetailModal = ({ visible, spot, onClose }) => {
 
 // Main component
 const TabSpotsScreen = () => {
-  const { spots, updateSpots } = useAppContext();
+  const { spots, updateSpots, deleteSpot } = useAppContext();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -141,6 +169,15 @@ const TabSpotsScreen = () => {
       console.error('Error refreshing spots:', error);
     }
     setRefreshing(false);
+  };
+
+  const handleDeleteSpot = async (spotId) => {
+    const success = await deleteSpot(spotId);
+    if (success) {
+      handleCloseModal();
+    } else {
+      Alert.alert('Error', 'Failed to delete spot');
+    }
   };
 
   return (
@@ -182,6 +219,7 @@ const TabSpotsScreen = () => {
         visible={modalVisible}
         spot={selectedSpot}
         onClose={handleCloseModal}
+        onDelete={handleDeleteSpot}
       />
     </LinearGradient>
   );
@@ -385,6 +423,17 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    padding: 5,
+    marginLeft: 15,
+  },
+  deleteButton: {
+    marginRight: 5,
   },
 });
 
