@@ -27,13 +27,15 @@ const WelcomeScreen = () => {
 
   return (
     <ImageBackground style={styles.container} source={require('../assets/bg.png')}>
-      <LottieView
-        source={require('../assets/lottieJson/fisherman.json')}
-        autoPlay
-        loop
-        style={styles.animation}
-        resizeMode="cover"
-      />
+      <View style={styles.animationContainer}>
+        <LottieView
+          source={require('../assets/lottieJson/fisherman.json')}
+          autoPlay
+          loop
+          style={styles.animation}
+          resizeMode="cover"
+        />
+      </View>
       <Animated.Text 
         style={[
           styles.welcomeText,
@@ -61,6 +63,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  animationContainer: {
+    position: 'absolute',
+    top: height * 0.15,
   },
   animation: {
     width: width,
