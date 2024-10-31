@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Create the context
 const AppContext = createContext();
@@ -6,12 +7,30 @@ const AppContext = createContext();
 // Create a provider component
 export function AppProvider({ children }) {
     // Define your state values here
-    const [someValue, setSomeValue] = useState('default value');
+    const [spots, setSpots] = useState([]);
     
+    // Add function to update spots
+    const updateSpots = async (newSpots) => {
+        setSpots(newSpots);
+    };
+
+    const deleteSpot = async (spotId) => {
+        try {
+            const updatedSpots = spots.filter(spot => spot.id !== spotId);
+            await AsyncStorage.setItem('fishingSpots', JSON.stringify(updatedSpots));
+            setSpots(updatedSpots);
+            return true;
+        } catch (error) {
+            console.error('Error deleting spot:', error);
+            return false;
+        }
+    };
+
     // Create an object with all values and functions you want to share
     const value = {
-        someValue,
-        setSomeValue,
+        spots,
+        updateSpots,
+        deleteSpot,
         // Add more state and functions as needed
     };
 
