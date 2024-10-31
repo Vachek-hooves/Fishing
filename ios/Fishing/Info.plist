@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Fishing</string>
+	<string>UltimateFishingDiary</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -31,11 +31,17 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>We need calendar access to add moon phase reminders</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to camera to take photos of your fishing spots</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>We need your location to provide accurate weather information</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to photo library to add images to your fishing spots</string>
 	<key>UIAppFonts</key>
 	<array>
-	    <string>AntDesign.ttf</string>
+		<string>AntDesign.ttf</string>
 		<string>Entypo.ttf</string>
 		<string>EvilIcons.ttf</string>
 		<string>Feather.ttf</string>
@@ -57,16 +63,6 @@
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-  	<string>We need your coarse location to show fishing spots near you</string>
-  	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-  	<string>We need your location to show fishing spots near you</string>
-	<key>NSCalendarsUsageDescription</key>
-  	<string>We need calendar access to add moon phase reminders</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to photo library to add images to your fishing spots</string>
-	<key>NSCameraUsageDescription</key>
-	<string>We need access to camera to take photos of your fishing spots</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>

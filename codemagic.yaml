@@ -7,12 +7,12 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier:
+        bundle_identifier: com.ultimate.fishingdairy
       vars:
-        APP_STORE_APPLE_ID:
-        BUNDLE_ID:
-        XCODE_WORKSPACE:
-        CODE_SCHEME:
+        APP_STORE_APPLE_ID: 6737589018
+        BUNDLE_ID: 'com.ultimate.fishingdairy'
+        XCODE_WORKSPACE: 'Fishing.xcworkspace'
+        CODE_SCHEME: 'Fishing'
     scripts:
       - name: Install node modules
         script: |
