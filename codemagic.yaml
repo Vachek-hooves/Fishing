@@ -3,7 +3,7 @@ workflows:
     name: Ultimate Fishing Dairy
     max_build_duration: 120
     integrations:
-      app_store_connect:
+      app_store_connect: UltimateFishingCodemagicApiKey
     environment:
       ios_signing:
         distribution_type: app_store
