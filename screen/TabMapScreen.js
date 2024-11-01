@@ -498,8 +498,9 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
+    // justifyContent: 'flex-end',
     backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingTop: '15%',
   },
   modalContent: {
     backgroundColor: 'white',
