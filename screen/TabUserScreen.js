@@ -78,6 +78,29 @@ const TabUserScreen = () => {
     });
   };
 
+  const deleteImage = () => {
+    Alert.alert(
+      'Delete Photo',
+      'Are you sure you want to remove your profile photo?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            setUser(prevUser => ({
+              ...prevUser,
+              image: null
+            }));
+          }
+        }
+      ]
+    );
+  };
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -117,6 +140,12 @@ const TabUserScreen = () => {
                   <View style={styles.editIconContainer}>
                     <Icon name="pencil" size={16} color="#fff" />
                   </View>
+                  <TouchableOpacity 
+                    style={styles.deleteImageButton} 
+                    onPress={deleteImage}
+                  >
+                    <Icon name="trash-can-outline" size={16} color="#fff" />
+                  </TouchableOpacity>
                 </>
               ) : (
                 <View style={styles.placeholderImage}>
@@ -379,6 +408,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  deleteImageButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 59, 48, 0.8)',
+    borderRadius: 15,
+    padding: 8,
+    borderWidth: 2,
+    borderColor: '#fff',
   },
 });
 
