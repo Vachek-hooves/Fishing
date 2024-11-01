@@ -9,6 +9,8 @@ import {
   SafeAreaView,
   Image,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -110,116 +112,124 @@ const TabUserScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <LinearGradient
-        colors={['#003366', '#001f3f', '#000']}
-        style={styles.container}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}>
-          
-          {isExistingUser && (
-            <View style={styles.welcomeContainer}>
-              <Text style={styles.welcomeText}>
-                Welcome back, {user.name}!
-              </Text>
-              {/* <LottieView
-                source={require('../assets/lottieJson/welcome.json')}
-                autoPlay
-                loop
-                style={styles.welcomeAnimation}
-              /> */}
-            </View>
-          )}
-
-          <View style={styles.headerContainer}>
-            <TouchableOpacity onPress={selectImage} style={styles.imageContainer}>
-              {user.image ? (
-                <>
-                  <Image source={{ uri: user.image }} style={styles.profileImage} />
-                  <View style={styles.editIconContainer}>
-                    <Icon name="pencil" size={16} color="#fff" />
-                  </View>
-                  <TouchableOpacity 
-                    style={styles.deleteImageButton} 
-                    onPress={deleteImage}
-                  >
-                    <Icon name="trash-can-outline" size={16} color="#fff" />
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <View style={styles.placeholderImage}>
-                  <Icon name="camera" size={40} color="#ffd700" />
-                  <Text style={styles.addPhotoText}>Add Photo</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-            {!isExistingUser && (
-              <LottieView
-                source={require('../assets/lottieJson/registration.json')}
-                autoPlay
-                loop
-                style={styles.lottieAnimation}
-              />
-            )}
-          </View>
-
-          <View style={styles.userInfoContainer}>
-            <Text style={styles.sectionTitle}>
-              {isExistingUser ? 'Your Profile' : 'Create Profile'}
-            </Text>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+      >
+        <LinearGradient
+          colors={['#003366', '#001f3f', '#000']}
+          style={styles.container}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}>
             
-            <View style={styles.inputContainer}>
-              <Icon name="account" size={24} color="#ffd700" />
-              <TextInput
-                style={styles.input}
-                placeholder="Name"
-                placeholderTextColor="#666"
-                value={user.name}
-                onChangeText={(text) => setUser(prevUser => ({...prevUser, name: text}))}
-              />
-            </View>
-
-            {user.name && (
-              <View style={styles.lastUpdatedContainer}>
-                <Icon name="clock-outline" size={16} color="#ffd700" />
-                <Text style={styles.lastUpdatedText}>
-                  Last updated: {new Date().toLocaleDateString()}
+            {isExistingUser && (
+              <View style={styles.welcomeContainer}>
+                <Text style={styles.welcomeText}>
+                  Welcome back, {user.name}!
                 </Text>
+                {/* <LottieView
+                  source={require('../assets/lottieJson/welcome.json')}
+                  autoPlay
+                  loop
+                  style={styles.welcomeAnimation}
+                /> */}
               </View>
             )}
-          </View>
 
-          <TouchableOpacity 
-            style={[
-              styles.saveButton,
-              !user.name && styles.saveButtonDisabled
-            ]}
-            onPress={saveUserData}
-            disabled={!user.name}>
-            <Text style={styles.saveButtonText}>
-              {isExistingUser ? 'Update Profile' : 'Save Profile'}
-            </Text>
-          </TouchableOpacity>
+            <View style={styles.headerContainer}>
+              <TouchableOpacity onPress={selectImage} style={styles.imageContainer}>
+                {user.image ? (
+                  <>
+                    <Image source={{ uri: user.image }} style={styles.profileImage} />
+                    <View style={styles.editIconContainer}>
+                      <Icon name="pencil" size={16} color="#fff" />
+                    </View>
+                    <TouchableOpacity 
+                      style={styles.deleteImageButton} 
+                      onPress={deleteImage}
+                    >
+                      <Icon name="trash-can-outline" size={16} color="#fff" />
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <View style={styles.placeholderImage}>
+                    <Icon name="camera" size={40} color="#ffd700" />
+                    <Text style={styles.addPhotoText}>Add Photo</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              {!isExistingUser && (
+                <LottieView
+                  source={require('../assets/lottieJson/registration.json')}
+                  autoPlay
+                  loop
+                  style={styles.lottieAnimation}
+                />
+              )}
+            </View>
 
-          {isExistingUser && (
+            <View style={styles.userInfoContainer}>
+              <Text style={styles.sectionTitle}>
+                {isExistingUser ? 'Your Profile' : 'Create Profile'}
+              </Text>
+              
+              <View style={styles.inputContainer}>
+                <Icon name="account" size={24} color="#ffd700" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Name"
+                  placeholderTextColor="#666"
+                  value={user.name}
+                  onChangeText={(text) => setUser(prevUser => ({...prevUser, name: text}))}
+                />
+              </View>
+
+              {user.name && (
+                <View style={styles.lastUpdatedContainer}>
+                  <Icon name="clock-outline" size={16} color="#ffd700" />
+                  <Text style={styles.lastUpdatedText}>
+                    Last updated: {new Date().toLocaleDateString()}
+                  </Text>
+                </View>
+              )}
+            </View>
+
             <TouchableOpacity 
-              style={styles.deleteButton}
-              onPress={async () => {
-                try {
-                  await AsyncStorage.removeItem('userData');
-                  setUser({ name: '', image: null });
-                  setIsExistingUser(false);
-                  Alert.alert('Success', 'Profile deleted successfully!');
-                } catch (error) {
-                  Alert.alert('Error', 'Failed to delete profile');
-                }
-              }}>
-              <Text style={styles.deleteButtonText}>Delete Profile</Text>
+              style={[
+                styles.saveButton,
+                !user.name && styles.saveButtonDisabled
+              ]}
+              onPress={saveUserData}
+              disabled={!user.name}>
+              <Text style={styles.saveButtonText}>
+                {isExistingUser ? 'Update Profile' : 'Save Profile'}
+              </Text>
             </TouchableOpacity>
-          )}
-        </ScrollView>
-      </LinearGradient>
+
+            {isExistingUser && (
+              <TouchableOpacity 
+                style={styles.deleteButton}
+                onPress={async () => {
+                  try {
+                    await AsyncStorage.removeItem('userData');
+                    setUser({ name: '', image: null });
+                    setIsExistingUser(false);
+                    Alert.alert('Success', 'Profile deleted successfully!');
+                  } catch (error) {
+                    Alert.alert('Error', 'Failed to delete profile');
+                  }
+                }}>
+                <Text style={styles.deleteButtonText}>Delete Profile</Text>
+              </TouchableOpacity>
+            )}
+            <View style={{height:100}}/>
+          </ScrollView>
+        </LinearGradient>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -229,6 +239,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#003366',
   },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
@@ -237,6 +250,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
+    flexGrow: 1,
+    
   },
   headerContainer: {
     alignItems: 'center',
