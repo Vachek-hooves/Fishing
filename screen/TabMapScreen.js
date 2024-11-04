@@ -515,8 +515,8 @@ const TabMapScreen = () => {
           style={styles.enableLocationButton}
           onPress={retryLocation}
         >
-          <Icon name="my-location" size={24} color="white" />
-          <Text style={styles.enableLocationText}>Enable Location</Text>
+          <Icon name="my-location" size={32} color="white" />
+         
         </TouchableOpacity>
       )}
 
@@ -848,7 +848,7 @@ const styles = StyleSheet.create({
   },
   enableLocationButton: {
     position: 'absolute',
-    top: 16,
+    bottom: 140,
     right: 16,
     backgroundColor: '#4CAF50',
     flexDirection: 'row',
