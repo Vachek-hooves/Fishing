@@ -30,7 +30,7 @@ const TabWeatherScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    if (location) {
+    if (location && location.latitude && location.longitude) {
       fetchWeatherData(location.latitude, location.longitude);
     }
   }, [location]);

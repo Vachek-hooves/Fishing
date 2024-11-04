@@ -207,10 +207,32 @@ const TabMapScreen = () => {
     );
   };
 
+  const handleLocationDenied = () => {
+    const defaultLoc = {
+      latitude: DEFAULT_LOCATION.latitude,
+      longitude: DEFAULT_LOCATION.longitude
+    };
+    
+    updateLocation(defaultLoc, true); // Update context with default location
+    setInitialRegion(DEFAULT_LOCATION);
+    setIsLoading(false);
+    Alert.alert(
+      'Using Default Location',
+      'The app will use a default location.',
+      [{ text: 'OK', style: 'default' }]
+    );
+  };
+
   const useDefaultLocation = () => {
+    const defaultLoc = {
+      latitude: DEFAULT_LOCATION.latitude,
+      longitude: DEFAULT_LOCATION.longitude
+    };
+    
     setUsingDefaultLocation(true);
     setInitialRegion(DEFAULT_LOCATION);
     setLocationPermissionChecked(true);
+    updateLocation(defaultLoc, true); // Update context with default location
     setIsLoading(false);
     Alert.alert(
       'Using San Francisco Location',
@@ -325,17 +347,6 @@ const TabMapScreen = () => {
       console.warn('Permission error:', err);
       handleLocationDenied();
     }
-  };
-
-  const handleLocationDenied = () => {
-    updateLocation(DEFAULT_LOCATION, true); // Set default location in context
-    setInitialRegion(DEFAULT_LOCATION);
-    setIsLoading(false);
-    Alert.alert(
-      'Using Default Location',
-      'The app will use a default location.',
-      [{ text: 'OK', style: 'default' }]
-    );
   };
 
   const loadMarkers = async () => {

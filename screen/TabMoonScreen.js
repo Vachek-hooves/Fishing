@@ -264,8 +264,9 @@ const TabMoonScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    if (location) {
+    if (location && location.latitude && location.longitude) {
       handleDateSelected(new Date());
+      setIsLoading(false);
     }
   }, [location]);
 

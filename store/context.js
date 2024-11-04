@@ -1,6 +1,13 @@
 import { createContext, useContext, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export const DEFAULT_LOCATION = {
+  latitude: 37.7749, // San Francisco coordinates
+  longitude: -122.4194,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+};
+
 // Create the context
 const AppContext = createContext();
 
@@ -8,7 +15,10 @@ const AppContext = createContext();
 export function AppProvider({ children }) {
     // Define your state values here
     const [spots, setSpots] = useState([]);
-    const [location, setLocation] = useState(null);
+    const [location, setLocation] = useState({
+        latitude: DEFAULT_LOCATION.latitude,
+        longitude: DEFAULT_LOCATION.longitude
+    });
     const [usingDefaultLocation, setUsingDefaultLocation] = useState(false);
     
     // Add function to update spots
@@ -17,8 +27,10 @@ export function AppProvider({ children }) {
     };
 
     const updateLocation = (newLocation, isDefault = false) => {
-        setLocation(newLocation);
-        setUsingDefaultLocation(isDefault);
+        if (newLocation && newLocation.latitude && newLocation.longitude) {
+            setLocation(newLocation);
+            setUsingDefaultLocation(isDefault);
+        }
     };
 
     const deleteSpot = async (spotId) => {
