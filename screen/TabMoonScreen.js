@@ -15,6 +15,11 @@ import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 
+const DEFAULT_LOCATION = {
+  latitude: 37.7749,  // San Francisco coordinates
+  longitude: -122.4194
+};
+
 const getFishingRating = (moonPhase, weather) => {
   // Moon phase fishing ratings (0-10 scale)
   const moonRatings = {
@@ -266,7 +271,13 @@ const TabMoonScreen = () => {
       const position = await new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(
           pos => resolve(pos),
-          error => reject(error),
+          error => {
+            if (error.code === 1) { // Permission denied
+              resolve(null);
+            } else {
+              reject(error);
+            }
+          },
           {
             enableHighAccuracy: true,
             timeout: 20000,
@@ -275,14 +286,24 @@ const TabMoonScreen = () => {
         );
       });
 
-      setLocation({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      });
-      handleDateSelected(new Date());
-      setIsLoading(false);
+      if (!position) {
+        // Silently use default location
+        setLocation(DEFAULT_LOCATION);
+        handleDateSelected(new Date());
+      } else {
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        handleDateSelected(new Date());
+      }
     } catch (error) {
-      console.error('Location error:', error);
+      if (error.code !== 1) {
+        console.warn('Unexpected location error:', error);
+      }
+      setLocation(DEFAULT_LOCATION);
+      handleDateSelected(new Date());
+    } finally {
       setIsLoading(false);
     }
   };

@@ -17,6 +17,11 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const API_KEY = 'da09552db9dee8853551090775811fb7'; // Get from openweathermap.org
 
+const DEFAULT_LOCATION = {
+  latitude: 37.7749,  // San Francisco coordinates
+  longitude: -122.4194
+};
+
 const TabWeatherScreen = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState(null);
@@ -32,7 +37,13 @@ const TabWeatherScreen = () => {
       const position = await new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(
           pos => resolve(pos),
-          error => reject(error),
+          error => {
+            if (error.code === 1) {
+              resolve(null);
+            } else {
+              reject(error);
+            }
+          },
           {
             enableHighAccuracy: true,
             timeout: 20000,
@@ -41,16 +52,23 @@ const TabWeatherScreen = () => {
         );
       });
 
-      setLocation({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      });
-      
-      // Fetch weather data after getting location
-      await fetchWeatherData(position.coords.latitude, position.coords.longitude);
-      setIsLoading(false);
+      if (!position) {
+        setLocation(DEFAULT_LOCATION);
+        await fetchWeatherData(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude);
+      } else {
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        await fetchWeatherData(position.coords.latitude, position.coords.longitude);
+      }
     } catch (error) {
-      console.error('Location error:', error);
+      if (error.code !== 1) {
+        console.warn('Unexpected location error:', error);
+      }
+      setLocation(DEFAULT_LOCATION);
+      await fetchWeatherData(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -105,6 +123,22 @@ const TabWeatherScreen = () => {
     });
   };
 
+  const renderLocationIndicator = () => {
+    if (location && 
+        location.latitude === DEFAULT_LOCATION.latitude && 
+        location.longitude === DEFAULT_LOCATION.longitude) {
+      return (
+        <View style={styles.defaultLocationBanner}>
+          <Icon name="information" size={20} color="#ffd700" />
+          <Text style={styles.defaultLocationText}>
+            Using San Francisco location
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
   if (isLoading) {
     return <LoadingIndicator />;
   }
@@ -115,6 +149,7 @@ const TabWeatherScreen = () => {
       style={styles.mainContainer}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 1}}>
+      {renderLocationIndicator()}
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
@@ -419,6 +454,25 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#004d99',
     marginTop: 4,
+  },
+  defaultLocationBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+  },
+  defaultLocationText: {
+    color: '#ffd700',
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
 

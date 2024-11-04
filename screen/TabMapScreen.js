@@ -91,8 +91,8 @@ const waterOrientedMapStyle = [
 ];
 
 const DEFAULT_LOCATION = {
-  latitude: 40.7128,
-  longitude: -74.0060,
+  latitude: 37.7749, // San Francisco coordinates
+  longitude: -122.4194,
   latitudeDelta: 0.0922,
   longitudeDelta: 0.0421,
 };
@@ -146,30 +146,168 @@ const TabMapScreen = () => {
   useEffect(() => {
     const initializeMap = async () => {
       await loadMarkers();
-      await requestLocationPermission();
+      await checkLocationPermission();
     };
 
     initializeMap();
   }, []);
 
-  const requestLocationPermission = async () => {
+  const checkLocationPermission = async () => {
     try {
       if (Platform.OS === 'ios') {
         const granted = await Geolocation.requestAuthorization('whenInUse');
         if (granted === 'granted') {
           await getCurrentLocation();
         } else {
-          handleLocationDenied();
+          showLocationPermissionDialog();
         }
       } else {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'Location Permission Required',
-            message: 'This app needs to access your location to show fishing spots near you',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
+            title: 'Location Access',
+            message: 'This app can show fishing spots near you. Would you like to enable location access?',
+            buttonPositive: 'Yes, Enable',
+            buttonNegative: 'Use Default Location',
+            buttonNeutral: 'Ask Me Later'
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          await getCurrentLocation();
+        } else {
+          showLocationPermissionDialog();
+        }
+      }
+    } catch (err) {
+      console.warn(err);
+      showLocationPermissionDialog();
+    }
+  };
+
+  const showLocationPermissionDialog = () => {
+    Alert.alert(
+      'Location Access',
+      'Would you like to use your current location to find fishing spots near you?',
+      [
+        {
+          text: 'Use Default Location',
+          onPress: () => useDefaultLocation(),
+          style: 'cancel'
+        },
+        {
+          text: 'Enable Location',
+          onPress: retryLocation
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const useDefaultLocation = () => {
+    setUsingDefaultLocation(true);
+    setInitialRegion(DEFAULT_LOCATION);
+    setLocationPermissionChecked(true);
+    setIsLoading(false);
+    Alert.alert(
+      'Using San Francisco Location',
+      'You can enable location access later to find fishing spots near you.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const retryLocation = async () => {
+    setIsLoading(true);
+    setLocationError(false);
+    
+    try {
+      if (locationPermissionChecked) {
+        // If we've already checked permissions once, open settings
+        if (Platform.OS === 'ios') {
+          Alert.alert(
+            'Location Access Required',
+            'Please enable location access in Settings to find fishing spots near you.',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+                onPress: () => {
+                  setIsLoading(false);
+                  handleLocationDenied();
+                }
+              },
+              {
+                text: 'Open Settings',
+                onPress: () => {
+                  Linking.openSettings();
+                  setIsLoading(false);
+                }
+              }
+            ]
+          );
+        } else {
+          // For Android
+          await requestLocationPermission();
+        }
+      } else {
+        // First time requesting location
+        await requestLocationPermission();
+        setLocationPermissionChecked(true);
+      }
+    } catch (error) {
+      console.error('Retry failed:', error);
+      handleLocationDenied();
+    }
+  };
+
+  // Update requestLocationPermission to track the first check
+  const requestLocationPermission = async () => {
+    try {
+      if (Platform.OS === 'ios') {
+        // First check current authorization status
+        const currentStatus = await Geolocation.requestAuthorization('whenInUse');
+        console.log('Current location status:', currentStatus);
+
+        if (currentStatus === 'granted') {
+          await getCurrentLocation();
+        } else if (currentStatus === 'denied') {
+          // If already denied, direct to settings
+          Alert.alert(
+            'Location Access Required',
+            'Please enable location access in Settings to find fishing spots near you.',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+                onPress: () => handleLocationDenied()
+              },
+              {
+                text: 'Open Settings',
+                onPress: () => {
+                  Linking.openSettings();
+                  handleLocationDenied();
+                }
+              }
+            ]
+          );
+        } else {
+          // For other cases (like first time request)
+          const granted = await Geolocation.requestAuthorization('whenInUse');
+          if (granted === 'granted') {
+            await getCurrentLocation();
+          } else {
+            handleLocationDenied();
+          }
+        }
+      } else {
+        // Android code remains the same
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Access',
+            message: 'This app can show fishing spots near you. Would you like to enable location access?',
+            buttonPositive: 'Yes, Enable',
+            buttonNegative: 'Use Default Location',
+            buttonNeutral: 'Ask Me Later'
           }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -178,44 +316,9 @@ const TabMapScreen = () => {
           handleLocationDenied();
         }
       }
+      setLocationPermissionChecked(true);
     } catch (err) {
-      console.warn(err);
-      handleLocationDenied();
-    }
-  };
-
-  const handleLocationDenied = () => {
-    setUsingDefaultLocation(true);
-    setInitialRegion(DEFAULT_LOCATION);
-    setIsLoading(false);
-    Alert.alert(
-      'Using Default Location',
-      'The app is currently using a default location. To see fishing spots near you, please enable location access.',
-      [
-        {
-          text: 'Continue with Default',
-          style: 'cancel'
-        },
-        {
-          text: 'Enable Location',
-          onPress: retryLocation
-        }
-      ]
-    );
-  };
-
-  const retryLocation = async () => {
-    setIsLoading(true);
-    setLocationError(false);
-    try {
-      if (Platform.OS === 'ios') {
-        
-        Linking.openSettings();
-      } else {
-        await requestLocationPermission();
-      }
-    } catch (error) {
-      console.error('Retry failed:', error);
+      console.warn('Permission error:', err);
       handleLocationDenied();
     }
   };
