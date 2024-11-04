@@ -323,6 +323,22 @@ const TabMapScreen = () => {
     }
   };
 
+  const handleLocationDenied = () => {
+    setUsingDefaultLocation(true);
+    setInitialRegion(DEFAULT_LOCATION);
+    setIsLoading(false);
+    Alert.alert(
+      'Using Default Location',
+      'The app will use a default location.',
+      [
+        {
+          text: 'OK',
+          style: 'default'
+        }
+      ]
+    );
+  };
+
   const loadMarkers = async () => {
     try {
       const savedMarkers = await AsyncStorage.getItem('fishingSpots');
