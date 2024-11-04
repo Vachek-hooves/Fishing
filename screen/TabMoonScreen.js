@@ -14,6 +14,7 @@ import SunCalc from 'suncalc';
 import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
+import { useAppContext } from '../store/context';
 
 const DEFAULT_LOCATION = {
   latitude: 37.7749,  // San Francisco coordinates
@@ -257,56 +258,16 @@ const SunTimesInfo = ({ date, latitude, longitude }) => {
 };
 
 const TabMoonScreen = () => {
+  const { location } = useAppContext();
   const [selectedMoonPhase, setSelectedMoonPhase] = useState(null);
-  const [location, setLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    getCurrentLocation();
-  }, []);
-
-  const getCurrentLocation = async () => {
-    try {
-      const position = await new Promise((resolve, reject) => {
-        Geolocation.getCurrentPosition(
-          pos => resolve(pos),
-          error => {
-            if (error.code === 1) { // Permission denied
-              resolve(null);
-            } else {
-              reject(error);
-            }
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 1000,
-          },
-        );
-      });
-
-      if (!position) {
-        // Silently use default location
-        setLocation(DEFAULT_LOCATION);
-        handleDateSelected(new Date());
-      } else {
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-        handleDateSelected(new Date());
-      }
-    } catch (error) {
-      if (error.code !== 1) {
-        console.warn('Unexpected location error:', error);
-      }
-      setLocation(DEFAULT_LOCATION);
+    if (location) {
       handleDateSelected(new Date());
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [location]);
 
   const handleDateSelected = date => {
     if (!location || !date) return;
@@ -385,7 +346,7 @@ const TabMoonScreen = () => {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={getCurrentLocation}
+              onRefresh={handleDateSelected}
               tintColor="#ffd700"
             />
           }>

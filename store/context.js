@@ -8,10 +8,17 @@ const AppContext = createContext();
 export function AppProvider({ children }) {
     // Define your state values here
     const [spots, setSpots] = useState([]);
+    const [location, setLocation] = useState(null);
+    const [usingDefaultLocation, setUsingDefaultLocation] = useState(false);
     
     // Add function to update spots
     const updateSpots = async (newSpots) => {
         setSpots(newSpots);
+    };
+
+    const updateLocation = (newLocation, isDefault = false) => {
+        setLocation(newLocation);
+        setUsingDefaultLocation(isDefault);
     };
 
     const deleteSpot = async (spotId) => {
@@ -31,7 +38,9 @@ export function AppProvider({ children }) {
         spots,
         updateSpots,
         deleteSpot,
-        // Add more state and functions as needed
+        location,
+        usingDefaultLocation,
+        updateLocation
     };
 
     return (

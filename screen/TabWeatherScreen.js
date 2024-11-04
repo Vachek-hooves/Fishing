@@ -14,6 +14,7 @@ import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
 import LinearGradient from 'react-native-linear-gradient';
+import { useAppContext } from '../store/context';
 
 const API_KEY = 'da09552db9dee8853551090775811fb7'; // Get from openweathermap.org
 
@@ -23,55 +24,16 @@ const DEFAULT_LOCATION = {
 };
 
 const TabWeatherScreen = () => {
+  const { location, usingDefaultLocation } = useAppContext();
   const [weatherData, setWeatherData] = useState(null);
-  const [location, setLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    getCurrentLocation();
-  }, []);
-
-  const getCurrentLocation = async () => {
-    try {
-      const position = await new Promise((resolve, reject) => {
-        Geolocation.getCurrentPosition(
-          pos => resolve(pos),
-          error => {
-            if (error.code === 1) {
-              resolve(null);
-            } else {
-              reject(error);
-            }
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 1000,
-          },
-        );
-      });
-
-      if (!position) {
-        setLocation(DEFAULT_LOCATION);
-        await fetchWeatherData(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude);
-      } else {
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-        await fetchWeatherData(position.coords.latitude, position.coords.longitude);
-      }
-    } catch (error) {
-      if (error.code !== 1) {
-        console.warn('Unexpected location error:', error);
-      }
-      setLocation(DEFAULT_LOCATION);
-      await fetchWeatherData(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude);
-    } finally {
-      setIsLoading(false);
+    if (location) {
+      fetchWeatherData(location.latitude, location.longitude);
     }
-  };
+  }, [location]);
 
   const fetchWeatherData = async (lat, lon) => {
     try {
@@ -124,9 +86,7 @@ const TabWeatherScreen = () => {
   };
 
   const renderLocationIndicator = () => {
-    if (location && 
-        location.latitude === DEFAULT_LOCATION.latitude && 
-        location.longitude === DEFAULT_LOCATION.longitude) {
+    if (usingDefaultLocation) {
       return (
         <View style={styles.defaultLocationBanner}>
           <Icon name="information" size={20} color="#ffd700" />
@@ -149,7 +109,6 @@ const TabWeatherScreen = () => {
       style={styles.mainContainer}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 1}}>
-      {renderLocationIndicator()}
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
@@ -157,13 +116,14 @@ const TabWeatherScreen = () => {
         bounces={true}
         refreshControl={
           <RefreshControl 
-            refreshing={refreshing} 
-            onRefresh={onRefresh}
-            tintColor="#fff"
-            colors={["#ffd700"]}
+          refreshing={refreshing} 
+          onRefresh={onRefresh}
+          tintColor="#fff"
+          colors={["#ffd700"]}
           />
         }
-      >
+        >
+        {renderLocationIndicator()}
         {weatherData && (
           <View style={styles.weatherContainer}>
             {/* Location Header */}
@@ -467,12 +427,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1,
+    marginHorizontal:10,
+    borderRadius:12
   },
   defaultLocationText: {
     color: '#ffd700',
     marginLeft: 8,
     fontSize: 14,
     fontWeight: '500',
+    
   },
 });
 

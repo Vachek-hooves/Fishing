@@ -98,7 +98,7 @@ const DEFAULT_LOCATION = {
 };
 
 const TabMapScreen = () => {
-  const { spots, updateSpots } = useAppContext();
+  const { spots, updateSpots, location, updateLocation } = useAppContext();
   const [initialRegion, setInitialRegion] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -115,12 +115,16 @@ const TabMapScreen = () => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         (position) => {
-          const region = {
+          const newLocation = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
+          };
+          const region = {
+            ...newLocation,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           };
+          updateLocation(newLocation, false); // Update location in context
           setLocationError(false);
           setInitialRegion(region);
           fadeOut();
@@ -324,18 +328,13 @@ const TabMapScreen = () => {
   };
 
   const handleLocationDenied = () => {
-    setUsingDefaultLocation(true);
+    updateLocation(DEFAULT_LOCATION, true); // Set default location in context
     setInitialRegion(DEFAULT_LOCATION);
     setIsLoading(false);
     Alert.alert(
       'Using Default Location',
       'The app will use a default location.',
-      [
-        {
-          text: 'OK',
-          style: 'default'
-        }
-      ]
+      [{ text: 'OK', style: 'default' }]
     );
   };
 
