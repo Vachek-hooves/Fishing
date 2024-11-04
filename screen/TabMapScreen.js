@@ -521,7 +521,7 @@ const TabMapScreen = () => {
         </MapView>
       )}
 
-      {usingDefaultLocation && (
+      {/* {usingDefaultLocation && (
         <TouchableOpacity 
           style={styles.enableLocationButton}
           onPress={retryLocation}
@@ -529,7 +529,7 @@ const TabMapScreen = () => {
           <Icon name="my-location" size={32} color="white" />
          
         </TouchableOpacity>
-      )}
+      )} */}
 
       {(isLoading || locationError) && (
         <Animated.View 

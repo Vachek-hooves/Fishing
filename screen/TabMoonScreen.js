@@ -328,7 +328,7 @@ const TabMoonScreen = () => {
             onDateSelected={handleDateSelected}
             useIsoWeekday={false}
             minDate={new Date().setDate(new Date().getDate() - 30)}
-            maxDate={new Date().setDate(new Date().getDate() + 30)}
+            maxDate={new Date().setDate(new Date().getDate() + 60)}
             selectedDate={new Date()}
             daySelectionAnimation={{
               type: 'border',
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   calendarStrip: {
-    height: 120,
+    height: 130,
     padding: 10,
     borderRadius: 12,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -445,10 +445,11 @@ const styles = StyleSheet.create({
   },
   calendarHeader: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
   },
   dateNumber: {
     color: '#fff',
+    fontSize: 16,
   },
   dateName: {
     color: '#fff',
