@@ -13,7 +13,8 @@ import {
   ScrollView,
   FlatList,
   ActivityIndicator,
-  Animated
+  Animated,
+  Linking
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
@@ -89,6 +90,13 @@ const waterOrientedMapStyle = [
   }
 ];
 
+const DEFAULT_LOCATION = {
+  latitude: 40.7128,
+  longitude: -74.0060,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+};
+
 const TabMapScreen = () => {
   const { spots, updateSpots } = useAppContext();
   const [initialRegion, setInitialRegion] = useState(null);
@@ -100,6 +108,40 @@ const TabMapScreen = () => {
   const [markerImages, setMarkerImages] = useState([]);
   const [fadeAnim] = useState(new Animated.Value(1));
   const [locationError, setLocationError] = useState(false);
+  const [usingDefaultLocation, setUsingDefaultLocation] = useState(false);
+  const [locationPermissionChecked, setLocationPermissionChecked] = useState(false);
+
+  const getCurrentLocation = () => {
+    return new Promise((resolve, reject) => {
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const region = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          };
+          setLocationError(false);
+          setInitialRegion(region);
+          fadeOut();
+          resolve(position);
+        },
+        (error) => {
+          console.error('Location error:', error);
+          setLocationError(true);
+          handleLocationDenied();
+          reject(error);
+        },
+        { 
+          enableHighAccuracy: true, 
+          timeout: 20000, 
+          maximumAge: 1000,
+          distanceFilter: 10,
+          forceRequestLocation: true,
+        }
+      );
+    });
+  };
 
   useEffect(() => {
     const initializeMap = async () => {
@@ -117,12 +159,7 @@ const TabMapScreen = () => {
         if (granted === 'granted') {
           await getCurrentLocation();
         } else {
-          Alert.alert(
-            'Location Permission Required',
-            'Please enable location permissions in settings',
-            [{ text: 'OK' }]
-          );
-          setIsLoading(false);
+          handleLocationDenied();
         }
       } else {
         const granted = await PermissionsAndroid.request(
@@ -138,59 +175,48 @@ const TabMapScreen = () => {
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           await getCurrentLocation();
         } else {
-          Alert.alert(
-            'Location Permission Denied',
-            'You need to enable location permissions to see your position on the map',
-            [{ text: 'OK' }]
-          );
-          setIsLoading(false);
+          handleLocationDenied();
         }
       }
     } catch (err) {
       console.warn(err);
-      setIsLoading(false);
+      handleLocationDenied();
     }
   };
 
-  const getCurrentLocation = () => {
-    return new Promise((resolve, reject) => {
-      Geolocation.getCurrentPosition(
-        (position) => {
-          const region = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,  
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          };
-          setLocationError(false);
-          setInitialRegion(region);
-          fadeOut();
-          resolve(position);
+  const handleLocationDenied = () => {
+    setUsingDefaultLocation(true);
+    setInitialRegion(DEFAULT_LOCATION);
+    setIsLoading(false);
+    Alert.alert(
+      'Using Default Location',
+      'The app is currently using a default location. To see fishing spots near you, please enable location access.',
+      [
+        {
+          text: 'Continue with Default',
+          style: 'cancel'
         },
-        (error) => {
-          console.log('Location error:', error);
-          setLocationError(true);
-          setIsLoading(false);
-          reject(error);
-        },
-        { 
-          enableHighAccuracy: true, 
-          timeout: 20000,
-          maximumAge: 1000,
-          distanceFilter: 10,
-          forceRequestLocation: true,
+        {
+          text: 'Enable Location',
+          onPress: retryLocation
         }
-      );
-    });
+      ]
+    );
   };
 
   const retryLocation = async () => {
     setIsLoading(true);
     setLocationError(false);
     try {
-      await requestLocationPermission();
+      if (Platform.OS === 'ios') {
+        
+        Linking.openSettings();
+      } else {
+        await requestLocationPermission();
+      }
     } catch (error) {
       console.error('Retry failed:', error);
+      handleLocationDenied();
     }
   };
 
@@ -333,8 +359,8 @@ const TabMapScreen = () => {
         <MapView
           style={styles.map}
           initialRegion={initialRegion}
-          showsUserLocation={true}
-          showsMyLocationButton={true}
+          showsUserLocation={!usingDefaultLocation}
+          showsMyLocationButton={!usingDefaultLocation}
           onLongPress={handleMapLongPress}
           customMapStyle={waterOrientedMapStyle}
           mapType="terrain"
@@ -364,6 +390,16 @@ const TabMapScreen = () => {
             </Marker>
           ))}
         </MapView>
+      )}
+
+      {usingDefaultLocation && (
+        <TouchableOpacity 
+          style={styles.enableLocationButton}
+          onPress={retryLocation}
+        >
+          <Icon name="my-location" size={24} color="white" />
+          <Text style={styles.enableLocationText}>Enable Location</Text>
+        </TouchableOpacity>
       )}
 
       {(isLoading || locationError) && (
@@ -690,6 +726,29 @@ const styles = StyleSheet.create({
   markerLabel: {
     color: '#004B87',
     fontSize: 12,
+    fontWeight: 'bold',
+  },
+  enableLocationButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    backgroundColor: '#4CAF50',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 25,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  enableLocationText: {
+    color: 'white',
+    marginLeft: 8,
     fontWeight: 'bold',
   },
 });
