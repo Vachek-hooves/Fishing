@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,21 +15,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Fish from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
-import { useAppContext } from '../store/context';
+import {useAppContext} from '../store/context';
+import MainLayout from '../components/appLayout/MainLayout';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 // Separate SpotCard component
-const SpotCard = ({ spot, onPress }) => (
-  <TouchableOpacity 
+const SpotCard = ({spot, onPress}) => (
+  <TouchableOpacity
     style={styles.card}
     onPress={() => onPress(spot)}
-    activeOpacity={0.7}
-  >
-    <LinearGradient
-      colors={['#004B87', '#006494']}
-      style={styles.cardGradient}
-    >
+    activeOpacity={0.7}>
+    <LinearGradient colors={['#004B87', '#006494']} style={styles.cardGradient}>
       <View style={styles.cardContent}>
         <View style={styles.titleContainer}>
           <Fish name="fish" size={24} color="#ffd700" />
@@ -38,7 +35,8 @@ const SpotCard = ({ spot, onPress }) => (
         <View style={styles.coordinatesContainer}>
           <Icon name="location-on" size={16} color="#ffd700" />
           <Text style={styles.coordinates}>
-            {spot.coordinate.latitude.toFixed(6)}, {spot.coordinate.longitude.toFixed(6)}
+            {spot.coordinate.latitude.toFixed(6)},{' '}
+            {spot.coordinate.longitude.toFixed(6)}
           </Text>
         </View>
       </View>
@@ -47,9 +45,9 @@ const SpotCard = ({ spot, onPress }) => (
 );
 
 // Separate Modal component
-const SpotDetailModal = ({ visible, spot, onClose, onDelete }) => {
+const SpotDetailModal = ({visible, spot, onClose, onDelete}) => {
   if (!spot) return null;
-  
+
   const handleDelete = () => {
     Alert.alert(
       'Delete Spot',
@@ -57,46 +55,40 @@ const SpotDetailModal = ({ visible, spot, onClose, onDelete }) => {
       [
         {
           text: 'Cancel',
-          style: 'cancel'
+          style: 'cancel',
         },
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => onDelete(spot.id)
-        }
-      ]
+          onPress: () => onDelete(spot.id),
+        },
+      ],
     );
   };
-  
+
   return (
     <Modal
       visible={visible}
       animationType="slide"
       transparent={true}
       onRequestClose={onClose}
-      statusBarTranslucent
-    >
+      statusBarTranslucent>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <ScrollView 
-            showsVerticalScrollIndicator={false}
-            bounces={false}
-          >
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{spot.title}</Text>
               <View style={styles.modalActions}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={handleDelete}
                   style={[styles.actionButton, styles.deleteButton]}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
+                  hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
                   <Icon name="delete" size={24} color="#ff4444" />
                 </TouchableOpacity>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={onClose}
                   style={styles.actionButton}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
+                  hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
                   <Icon name="close" size={24} color="#003366" />
                 </TouchableOpacity>
               </View>
@@ -105,7 +97,7 @@ const SpotDetailModal = ({ visible, spot, onClose, onDelete }) => {
             <View style={styles.modalCoordinates}>
               <Icon name="location-on" size={20} color="#003366" />
               <Text style={styles.modalCoordinatesText}>
-                {spot.coordinate.latitude.toFixed(6)}, 
+                {spot.coordinate.latitude.toFixed(6)},
                 {spot.coordinate.longitude.toFixed(6)}
               </Text>
             </View>
@@ -120,14 +112,11 @@ const SpotDetailModal = ({ visible, spot, onClose, onDelete }) => {
             {spot.images && spot.images.length > 0 && (
               <View style={styles.imagesContainer}>
                 <Text style={styles.imagesTitle}>Photos</Text>
-                <ScrollView 
-                  horizontal 
-                  showsHorizontalScrollIndicator={false}
-                >
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   {spot.images.map((image, index) => (
                     <Image
                       key={index}
-                      source={{ uri: image.uri }}
+                      source={{uri: image.uri}}
                       style={styles.modalImage}
                     />
                   ))}
@@ -143,12 +132,12 @@ const SpotDetailModal = ({ visible, spot, onClose, onDelete }) => {
 
 // Main component
 const TabSpotsScreen = () => {
-  const { spots, updateSpots, deleteSpot } = useAppContext();
+  const {spots, updateSpots, deleteSpot} = useAppContext();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handleSpotPress = useCallback((spot) => {
+  const handleSpotPress = useCallback(spot => {
     setSelectedSpot(spot);
     setModalVisible(true);
   }, []);
@@ -171,7 +160,7 @@ const TabSpotsScreen = () => {
     setRefreshing(false);
   };
 
-  const handleDeleteSpot = async (spotId) => {
+  const handleDeleteSpot = async spotId => {
     const success = await deleteSpot(spotId);
     if (success) {
       handleCloseModal();
@@ -181,10 +170,7 @@ const TabSpotsScreen = () => {
   };
 
   return (
-    <LinearGradient
-      colors={['#003366', '#001f3f', '#000']}
-      style={styles.container}
-    >
+    <MainLayout>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -193,9 +179,10 @@ const TabSpotsScreen = () => {
             onRefresh={onRefresh}
             tintColor="#ffd700"
           />
-        }
-      >
-        <Text style={styles.headerTitle}>My Fishing Spots</Text>
+        }>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>My Fishing Spots</Text>
+        </View>
         {spots.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Fish name="fish-outline" size={60} color="#ffd700" />
@@ -206,11 +193,7 @@ const TabSpotsScreen = () => {
           </View>
         ) : (
           spots.map(spot => (
-            <SpotCard 
-              key={spot.id} 
-              spot={spot} 
-              onPress={handleSpotPress}
-            />
+            <SpotCard key={spot.id} spot={spot} onPress={handleSpotPress} />
           ))
         )}
       </ScrollView>
@@ -221,7 +204,7 @@ const TabSpotsScreen = () => {
         onClose={handleCloseModal}
         onDelete={handleDeleteSpot}
       />
-    </LinearGradient>
+    </MainLayout>
   );
 };
 
@@ -233,6 +216,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 24,
     paddingTop: 60,
+    // backgroundColor:'rgba(0,0,0,0.2)'
+  },
+  headerContainer: {
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   headerTitle: {
     fontSize: 24,
@@ -241,6 +230,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
     paddingVertical: 8,
+    // color: 'rgba(0,0,0,0.9)',
   },
   card: {
     marginBottom: 16,
@@ -248,7 +238,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     borderWidth: 1,

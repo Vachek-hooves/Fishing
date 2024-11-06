@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -14,7 +14,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
-import {View, AppState, TouchableOpacity, Text} from 'react-native';
+import {View, AppState, TouchableOpacity, Text, Animated} from 'react-native';
 import {
   setupPlayer,
   playBackgroundMusic,
@@ -269,7 +269,51 @@ const styles = {
   },
 };
 
+const loaders = [
+  require('./assets/loads/loader1.png'),
+  require('./assets/loads/loader2.png'),
+];
+
 function App() {
+  const [currentLoader, setCurrentLoader] = useState(0);
+  const fadeAnimation1 = useRef(new Animated.Value(1)).current;
+  const fadeAnimation2 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const animationTimeout = setTimeout(() => {
+      fadeToNextLoader();
+    }, 1500);
+
+    const navigation = setTimeout(() => {
+      navigateToMenu();
+    }, 4000);
+
+    return () => {
+      crearTimeout(animationTimeout);
+      crearTimeout(navigation);
+    };
+  }, []);
+
+  const fadeToNextLoader = () => {
+    Animated.parallel([
+      Animated.timing(fadeAnimation1, {
+        toValue: 0,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnimation2, {
+        toValue: 1,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setCurrentLoader();
+    });
+  };
+
+  const navigateToMenu = () => {
+    setCurrentLoader(2);
+  };
   return (
     <AppProvider>
       <NavigationContainer>
@@ -279,7 +323,32 @@ function App() {
             animation: 'fade',
             animationDuration: 1000,
           }}>
-          <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+            {currentLoader < 2 ? (
+            <Stack.Screen name="Welcome" options={{ headerShown: false }}>
+              {() => (
+                <View style={{ flex: 1 }}>
+                  <Animated.Image
+                    source={loaders[0]}
+                    style={[
+                      { width: '100%', height: '100%', position: 'absolute' },
+                      { opacity: fadeAnimation1 },
+                    ]}
+                  />
+                  <Animated.Image
+                    source={loaders[1]}
+                    style={[
+                      { width: '100%', height: '100%', position: 'absolute' },
+                      { opacity: fadeAnimation2 },
+                    ]}
+                  />
+                </View>
+              )}
+            </Stack.Screen>
+          ) : (
+            <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+            // <Stack.Screen name="TabNavigator" component={TabNavigator} />
+          )}
+          {/* <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} /> */}
           <Stack.Screen name="TabScreens" component={TabScreens} />
         </Stack.Navigator>
       </NavigationContainer>

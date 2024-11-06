@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -17,6 +17,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LottieView from 'lottie-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'react-native-image-picker';
+import MainLayout from '../components/appLayout/MainLayout';
 
 const TabUserScreen = () => {
   const [user, setUser] = useState({
@@ -61,8 +62,8 @@ const TabUserScreen = () => {
       maxHeight: 2000,
       storageOptions: {
         skipBackup: true,
-        path: 'images'
-      }
+        path: 'images',
+      },
     };
 
     ImagePicker.launchImageLibrary(options, response => {
@@ -71,10 +72,10 @@ const TabUserScreen = () => {
       } else if (response.error) {
         console.log('ImagePicker Error:', response.error);
       } else {
-        const source = { uri: response.assets[0].uri };
+        const source = {uri: response.assets[0].uri};
         setUser(prevUser => ({
           ...prevUser,
-          image: source.uri
+          image: source.uri,
         }));
       }
     });
@@ -87,7 +88,7 @@ const TabUserScreen = () => {
       [
         {
           text: 'Cancel',
-          style: 'cancel'
+          style: 'cancel',
         },
         {
           text: 'Delete',
@@ -95,37 +96,33 @@ const TabUserScreen = () => {
           onPress: () => {
             setUser(prevUser => ({
               ...prevUser,
-              image: null
+              image: null,
             }));
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
 
   if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-      </View>
-    );
+    return <View style={styles.loadingContainer}></View>;
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoidingView}
-      >
-        <LinearGradient
-          colors={['#003366', '#001f3f', '#000']}
-          style={styles.container}>
+    <MainLayout>
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardAvoidingView}>
+          {/* <LinearGradient
+            colors={['#003366', '#001f3f', '#000']}
+            style={styles.container}> */}
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             bounces={false}>
-            
             {isExistingUser && (
               <View style={styles.welcomeContainer}>
                 <Text style={styles.welcomeText}>
@@ -136,22 +133,26 @@ const TabUserScreen = () => {
                   autoPlay
                   loop
                   style={styles.welcomeAnimation}
-                /> */}
+                  /> */}
               </View>
             )}
 
             <View style={styles.headerContainer}>
-              <TouchableOpacity onPress={selectImage} style={styles.imageContainer}>
+              <TouchableOpacity
+                onPress={selectImage}
+                style={styles.imageContainer}>
                 {user.image ? (
                   <>
-                    <Image source={{ uri: user.image }} style={styles.profileImage} />
+                    <Image
+                      source={{uri: user.image}}
+                      style={styles.profileImage}
+                    />
                     <View style={styles.editIconContainer}>
                       <Icon name="pencil" size={16} color="#fff" />
                     </View>
-                    <TouchableOpacity 
-                      style={styles.deleteImageButton} 
-                      onPress={deleteImage}
-                    >
+                    <TouchableOpacity
+                      style={styles.deleteImageButton}
+                      onPress={deleteImage}>
                       <Icon name="trash-can-outline" size={16} color="#fff" />
                     </TouchableOpacity>
                   </>
@@ -176,7 +177,7 @@ const TabUserScreen = () => {
               <Text style={styles.sectionTitle}>
                 {isExistingUser ? 'Your Profile' : 'Create Profile'}
               </Text>
-              
+
               <View style={styles.inputContainer}>
                 <Icon name="account" size={24} color="#ffd700" />
                 <TextInput
@@ -184,7 +185,9 @@ const TabUserScreen = () => {
                   placeholder="Name"
                   placeholderTextColor="#666"
                   value={user.name}
-                  onChangeText={(text) => setUser(prevUser => ({...prevUser, name: text}))}
+                  onChangeText={text =>
+                    setUser(prevUser => ({...prevUser, name: text}))
+                  }
                 />
               </View>
 
@@ -198,10 +201,10 @@ const TabUserScreen = () => {
               )}
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[
                 styles.saveButton,
-                !user.name && styles.saveButtonDisabled
+                !user.name && styles.saveButtonDisabled,
               ]}
               onPress={saveUserData}
               disabled={!user.name}>
@@ -211,12 +214,12 @@ const TabUserScreen = () => {
             </TouchableOpacity>
 
             {isExistingUser && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.deleteButton}
                 onPress={async () => {
                   try {
                     await AsyncStorage.removeItem('userData');
-                    setUser({ name: '', image: null });
+                    setUser({name: '', image: null});
                     setIsExistingUser(false);
                     Alert.alert('Success', 'Profile deleted successfully!');
                   } catch (error) {
@@ -226,18 +229,19 @@ const TabUserScreen = () => {
                 <Text style={styles.deleteButtonText}>Delete Profile</Text>
               </TouchableOpacity>
             )}
-            <View style={{height:100}}/>
+            <View style={{height: 100}} />
           </ScrollView>
-        </LinearGradient>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          {/* </LinearGradient> */}
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </MainLayout>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#003366',
+    // backgroundColor: '#003366',
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -251,7 +255,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     flexGrow: 1,
-    
   },
   headerContainer: {
     alignItems: 'center',
@@ -262,10 +265,11 @@ const styles = StyleSheet.create({
     height: 250,
   },
   userInfoContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    // backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
+    backgroundColor: 'rgba(0,0,0,0.4)',
   },
   sectionTitle: {
     fontSize: 20,

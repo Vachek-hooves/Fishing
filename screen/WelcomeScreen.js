@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Dimensions, ImageBackground, Animated } from 'r
 import React, { useEffect, useRef } from 'react'
 import LottieView from 'lottie-react-native'
 import { useNavigation } from '@react-navigation/native';
+import MainLayout from '../components/appLayout/MainLayout';
 
 const { width, height } = Dimensions.get('window');
 
@@ -33,7 +34,9 @@ const WelcomeScreen = () => {
   }, []);
 
   return (
-    <ImageBackground style={styles.container} source={require('../assets/bg.png')}>
+    <MainLayout styles={{alignItems:'center',justifyContent:'center'}}>
+        {/* <ImageBackground style={styles.container} source={require('../assets/bg.png')}> */}
+
       <View style={styles.animationContainer}>
         <LottieView
           source={require('../assets/lottieJson/fisherman.json')}
@@ -41,7 +44,7 @@ const WelcomeScreen = () => {
           loop
           style={styles.animation}
           resizeMode="cover"
-        />
+          />
       </View>
       <Animated.Text 
         style={[
@@ -53,13 +56,14 @@ const WelcomeScreen = () => {
             ]
           }
         ]}
-      >
+        >
         Welcome{'\n'}to{'\n'}
         <Text style={{ fontSize: 42, color: '#FFD700' }}>
           Ultimate{'\n'}Fishing Diary
         </Text>
       </Animated.Text>
-    </ImageBackground>
+    {/* </ImageBackground> */}
+        </MainLayout>
   )
 }
 

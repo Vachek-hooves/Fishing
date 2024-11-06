@@ -8,13 +8,15 @@ import {
   Alert,
   Platform,
   PermissionsAndroid,
-  RefreshControl
+  RefreshControl,
+  ImageBackground
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
 import LinearGradient from 'react-native-linear-gradient';
 import { useAppContext } from '../store/context';
+import MainLayout from '../components/appLayout/MainLayout';
 
 const API_KEY = 'da09552db9dee8853551090775811fb7'; // Get from openweathermap.org
 
@@ -104,11 +106,14 @@ const TabWeatherScreen = () => {
   }
 
   return (
-    <LinearGradient
-      colors={['#003366', '#004d99', '#0066cc']} // Deep blue to lighter blue
-      style={styles.mainContainer}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 1}}>
+    // <LinearGradient
+    //   colors={['#003366', '#004d99', '#0066cc']} // Deep blue to lighter blue
+    //   style={styles.mainContainer}
+    //   start={{x: 0, y: 0}}
+    //   end={{x: 1, y: 1}}>
+    
+<MainLayout>
+    
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
@@ -218,7 +223,8 @@ const TabWeatherScreen = () => {
         )}
       </ScrollView>
         <View style={styles.bottomPadding} />
-    </LinearGradient>
+      
+        </MainLayout>
   );
 };
 
@@ -242,7 +248,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 16,
     padding: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)', // Slightly transparent white
+    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Slightly transparent white
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -251,6 +257,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     borderWidth: 1,
     borderColor: 'rgba(255, 215, 0, 0.3)',
+    
   },
   locationHeader: {
     alignItems: 'center',
