@@ -14,7 +14,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
-import {View, AppState, TouchableOpacity, Text, Animated} from 'react-native';
+import {View, AppState, TouchableOpacity, Text, Animated, Dimensions} from 'react-native';
 import {
   setupPlayer,
   playBackgroundMusic,
@@ -276,12 +276,12 @@ const loaders = [
 
 function App() {
   const [currentLoader, setCurrentLoader] = useState(0);
-  const fadeAnimation1 = useRef(new Animated.Value(1)).current;
-  const fadeAnimation2 = useRef(new Animated.Value(0)).current;
+  const slideAnimation1 = useRef(new Animated.Value(0)).current;
+  const slideAnimation2 = useRef(new Animated.Value(Dimensions.get('window').width)).current;
 
   useEffect(() => {
     const animationTimeout = setTimeout(() => {
-      fadeToNextLoader();
+      slideToNextLoader();
     }, 1500);
 
     const navigation = setTimeout(() => {
@@ -289,31 +289,32 @@ function App() {
     }, 4000);
 
     return () => {
-      crearTimeout(animationTimeout);
-      crearTimeout(navigation);
+      clearTimeout(animationTimeout);
+      clearTimeout(navigation);
     };
   }, []);
 
-  const fadeToNextLoader = () => {
+  const slideToNextLoader = () => {
     Animated.parallel([
-      Animated.timing(fadeAnimation1, {
+      Animated.timing(slideAnimation1, {
+        toValue: -Dimensions.get('window').width,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnimation2, {
         toValue: 0,
         duration: 1500,
         useNativeDriver: true,
       }),
-      Animated.timing(fadeAnimation2, {
-        toValue: 1,
-        duration: 1500,
-        useNativeDriver: true,
-      }),
     ]).start(() => {
-      setCurrentLoader();
+      setCurrentLoader(1);
     });
   };
 
   const navigateToMenu = () => {
     setCurrentLoader(2);
   };
+
   return (
     <AppProvider>
       <NavigationContainer>
@@ -323,22 +324,34 @@ function App() {
             animation: 'fade',
             animationDuration: 1000,
           }}>
-            {currentLoader < 2 ? (
+          {currentLoader < 2 ? (
             <Stack.Screen name="Welcome" options={{ headerShown: false }}>
               {() => (
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, backgroundColor: '#000' }}>
                   <Animated.Image
                     source={loaders[0]}
                     style={[
-                      { width: '100%', height: '100%', position: 'absolute' },
-                      { opacity: fadeAnimation1 },
+                      { 
+                        width: '100%', 
+                        height: '100%', 
+                        position: 'absolute',
+                      },
+                      { 
+                        transform: [{ translateX: slideAnimation1 }],
+                      },
                     ]}
                   />
                   <Animated.Image
                     source={loaders[1]}
                     style={[
-                      { width: '100%', height: '100%', position: 'absolute' },
-                      { opacity: fadeAnimation2 },
+                      { 
+                        width: '100%', 
+                        height: '100%', 
+                        position: 'absolute',
+                      },
+                      { 
+                        transform: [{ translateX: slideAnimation2 }],
+                      },
                     ]}
                   />
                 </View>
@@ -346,9 +359,7 @@ function App() {
             </Stack.Screen>
           ) : (
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
-            // <Stack.Screen name="TabNavigator" component={TabNavigator} />
           )}
-          {/* <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} /> */}
           <Stack.Screen name="TabScreens" component={TabScreens} />
         </Stack.Navigator>
       </NavigationContainer>
