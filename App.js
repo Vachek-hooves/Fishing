@@ -10,11 +10,19 @@ import {
   TabWeatherScreen,
   TabSpotsScreen,
   TabUserScreen,
+  TabAndroidMap,
 } from './screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
-import {View, AppState, TouchableOpacity, Text, Animated, Dimensions} from 'react-native';
+import {
+  View,
+  AppState,
+  TouchableOpacity,
+  Text,
+  Animated,
+  Dimensions,
+} from 'react-native';
 import {
   setupPlayer,
   playBackgroundMusic,
@@ -111,7 +119,7 @@ const TabScreens = () => {
           tabBarLabel: 'Moon',
         }}
       />
-        {/* <Tab.Screen
+      {/* <Tab.Screen
           name="TabMapScreen"
           component={TabMapScreen}
           options={{
@@ -129,6 +137,7 @@ const TabScreens = () => {
             tabBarLabel: 'Map',
           }}
         /> */}
+      <Tab.Screen name="TabAndroidMap" component={TabAndroidMap} />
       <Tab.Screen
         name="TabWeatherScreen"
         component={TabWeatherScreen}
@@ -277,7 +286,9 @@ const loaders = [
 function App() {
   const [currentLoader, setCurrentLoader] = useState(0);
   const slideAnimation1 = useRef(new Animated.Value(0)).current;
-  const slideAnimation2 = useRef(new Animated.Value(Dimensions.get('window').width)).current;
+  const slideAnimation2 = useRef(
+    new Animated.Value(Dimensions.get('window').width),
+  ).current;
 
   useEffect(() => {
     const animationTimeout = setTimeout(() => {
@@ -325,32 +336,32 @@ function App() {
             animationDuration: 1000,
           }}>
           {currentLoader < 2 ? (
-            <Stack.Screen name="Welcome" options={{ headerShown: false }}>
+            <Stack.Screen name="Welcome" options={{headerShown: false}}>
               {() => (
-                <View style={{ flex: 1, backgroundColor: '#000' }}>
+                <View style={{flex: 1, backgroundColor: '#000'}}>
                   <Animated.Image
                     source={loaders[0]}
                     style={[
-                      { 
-                        width: '100%', 
-                        height: '100%', 
+                      {
+                        width: '100%',
+                        height: '100%',
                         position: 'absolute',
                       },
-                      { 
-                        transform: [{ translateX: slideAnimation1 }],
+                      {
+                        transform: [{translateX: slideAnimation1}],
                       },
                     ]}
                   />
                   <Animated.Image
                     source={loaders[1]}
                     style={[
-                      { 
-                        width: '100%', 
-                        height: '100%', 
+                      {
+                        width: '100%',
+                        height: '100%',
                         position: 'absolute',
                       },
-                      { 
-                        transform: [{ translateX: slideAnimation2 }],
+                      {
+                        transform: [{translateX: slideAnimation2}],
                       },
                     ]}
                   />

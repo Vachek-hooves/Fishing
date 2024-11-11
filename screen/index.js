@@ -4,12 +4,14 @@ import TabMoonScreen from './TabMoonScreen';
 import TabWeatherScreen from './TabWeatherScreen';
 import TabSpotsScreen from './TabSpotsScreen';
 import TabUserScreen from './TabUserScreen';
+import TabAndroidMap from './TabAndroidMap';
 
 export {
-    TabMapScreen,
-    WelcomeScreen,
-    TabMoonScreen,
-        TabWeatherScreen,
-    TabSpotsScreen,
-    TabUserScreen
-}   
+  TabMapScreen,
+  WelcomeScreen,
+  TabMoonScreen,
+  TabWeatherScreen,
+  TabSpotsScreen,
+  TabUserScreen,
+  TabAndroidMap,
+};
