@@ -16,6 +16,7 @@ import LoadingIndicator from '../components/ui/LoadingIndicator';
 import { useAppContext } from '../store/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FishingSpotModal from '../components/MapScreen/FishingSpotModal';
+import MarkerDetailsModal from '../components/MapScreen/MarkerDetailsModal';
 const DEFAULT_LOCATION = {
   latitude: 37.7749,
   longitude: -122.4194,
@@ -29,6 +30,8 @@ const TabAndroidMap = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [locationError, setLocationError] = useState(false);
   const [usingDefaultLocation, setUsingDefaultLocation] = useState(false);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   
   // Modal state
   const [modalVisible, setModalVisible] = useState(false);
@@ -54,6 +57,11 @@ const TabAndroidMap = () => {
     };
     loadMarkers();
   }, []);
+
+  const handleMarkerPress = (marker) => {
+    setSelectedMarker(marker);
+    setDetailsModalVisible(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -96,6 +104,19 @@ const TabAndroidMap = () => {
           setNewMarkerCoordinate(null);
         }}
         coordinate={newMarkerCoordinate}
+        spots={spots}
+        updateSpots={updateSpots}
+      />
+
+
+      {/* Add MarkerDetailsModal */}
+      <MarkerDetailsModal
+        visible={detailsModalVisible}
+        onClose={() => {
+          setDetailsModalVisible(false);
+          setSelectedMarker(null);
+        }}
+        marker={selectedMarker}
         spots={spots}
         updateSpots={updateSpots}
       />
