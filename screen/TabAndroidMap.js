@@ -14,100 +14,46 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Fish from 'react-native-vector-icons/Ionicons';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
 import { useAppContext } from '../store/context';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import FishingSpotModal from '../components/MapScreen/FishingSpotModal';
 const DEFAULT_LOCATION = {
-  latitude: 37.7749, // San Francisco coordinates
+  latitude: 37.7749,
   longitude: -122.4194,
   latitudeDelta: 0.0922,
   longitudeDelta: 0.0421,
 };
 
 const TabAndroidMap = () => {
-  const { spots, location, updateLocation } = useAppContext();
+  const { spots, updateSpots, location, updateLocation } = useAppContext();
   const [initialRegion, setInitialRegion] = useState(DEFAULT_LOCATION);
   const [isLoading, setIsLoading] = useState(false);
   const [locationError, setLocationError] = useState(false);
   const [usingDefaultLocation, setUsingDefaultLocation] = useState(false);
+  
+  // Modal state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newMarkerCoordinate, setNewMarkerCoordinate] = useState(null);
 
+  // Handle long press on map to create new marker
+  const handleMapLongPress = (event) => {
+    setNewMarkerCoordinate(event.nativeEvent.coordinate);
+    setModalVisible(true);
+  };
+
+  // Load existing markers
   useEffect(() => {
-    // checkLocationPermission();
+    const loadMarkers = async () => {
+      try {
+        const savedSpots = await AsyncStorage.getItem('fishingSpots');
+        if (savedSpots) {
+          updateSpots(JSON.parse(savedSpots));
+        }
+      } catch (error) {
+        console.error('Error loading markers:', error);
+      }
+    };
+    loadMarkers();
   }, []);
-
-  // const checkLocationPermission = async () => {
-  //   try {
-  //     const granted = await PermissionsAndroid.request(
-  //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-  //       {
-  //         title: 'Location Permission',
-  //         message: 'This app needs access to your location to show nearby fishing spots.',
-  //         buttonPositive: 'OK',
-  //         buttonNegative: 'Cancel',
-  //       }
-  //     );
-
-  //     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-  //       getCurrentLocation();
-  //     } else {
-  //       console.log('Location permission denied');
-  //       useDefaultLocation();
-  //     }
-  //   } catch (err) {
-  //     console.warn(err);
-  //     useDefaultLocation();
-  //   }
-  // };
-
-  // const getCurrentLocation = () => {
-  //   Geolocation.getCurrentPosition(
-  //     (position) => {
-  //       const { latitude, longitude } = position.coords;
-  //       const newRegion = {
-  //         latitude,
-  //         longitude,
-  //         latitudeDelta: 0.0922,
-  //         longitudeDelta: 0.0421,
-  //       };
-  //       setInitialRegion(newRegion);
-  //       updateLocation({ latitude, longitude }, false);
-  //       setIsLoading(false);
-  //       setLocationError(false);
-  //     },
-  //     (error) => {
-  //       console.log(error.code, error.message);
-  //       setLocationError(true);
-  //       useDefaultLocation();
-  //     },
-  //     { 
-  //       enableHighAccuracy: true,
-  //       timeout: 15000,
-  //       maximumAge: 10000 
-  //     }
-  //   );
-  // };
-
-  const useDefaultLocation = () => {
-    setUsingDefaultLocation(true);
-    setInitialRegion(DEFAULT_LOCATION);
-    updateLocation({
-      latitude: DEFAULT_LOCATION.latitude,
-      longitude: DEFAULT_LOCATION.longitude
-    }, true);
-    setIsLoading(false);
-  };
-
-  const retryLocation = () => {
-    setIsLoading(true);
-    checkLocationPermission();
-  };
-
-  const handleMarkerPress = (marker) => {
-    // Handle marker press - you can implement your own logic here
-    Alert.alert(marker.title, marker.description || 'No description available');
-  };
-
-  if (isLoading) {
-    return <LoadingIndicator />;
-  }
 
   return (
     <View style={styles.container}>
@@ -120,6 +66,7 @@ const TabAndroidMap = () => {
           showsMyLocationButton={true}
           showsCompass={true}
           showsScale={true}
+          onLongPress={handleMapLongPress}
         >
           {spots && spots.map((marker) => (
             <Marker
@@ -142,15 +89,16 @@ const TabAndroidMap = () => {
         </MapView>
       )}
 
-      {/* {usingDefaultLocation && (
-        <TouchableOpacity 
-          style={styles.enableLocationButton}
-          onPress={retryLocation}
-        >
-          <Icon name="my-location" size={24} color="white" />
-          <Text style={styles.enableLocationText}>Enable Location</Text>
-        </TouchableOpacity>
-      )} */}
+      <FishingSpotModal
+        visible={modalVisible}
+        onClose={() => {
+          setModalVisible(false);
+          setNewMarkerCoordinate(null);
+        }}
+        coordinate={newMarkerCoordinate}
+        spots={spots}
+        updateSpots={updateSpots}
+      />
     </View>
   );
 };
@@ -176,22 +124,6 @@ const styles = StyleSheet.create({
   markerLabel: {
     color: '#004B87',
     fontSize: 12,
-    fontWeight: 'bold',
-  },
-  enableLocationButton: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-    backgroundColor: '#4CAF50',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 25,
-    elevation: 3,
-  },
-  enableLocationText: {
-    color: 'white',
-    marginLeft: 8,
     fontWeight: 'bold',
   },
 });
