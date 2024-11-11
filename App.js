@@ -94,24 +94,6 @@ const TabScreens = () => {
         },
       }}>
       <Tab.Screen
-        name="TabMapScreen"
-        component={TabMapScreen}
-        options={{
-          tabBarIcon: ({color, focused}) => (
-            <View style={styles.iconContainer}>
-              <Icon
-                name="map-marker"
-                color={color}
-                size={34} // Explicit size
-                style={[styles.icon, focused && styles.activeIcon]}
-              />
-              {focused && <View style={styles.activeIndicator} />}
-            </View>
-          ),
-          tabBarLabel: 'Map',
-        }}
-      />
-      <Tab.Screen
         name="TabMoonScreen"
         component={TabMoonScreen}
         options={{
@@ -129,6 +111,24 @@ const TabScreens = () => {
           tabBarLabel: 'Moon',
         }}
       />
+        {/* <Tab.Screen
+          name="TabMapScreen"
+          component={TabMapScreen}
+          options={{
+            tabBarIcon: ({color, focused}) => (
+              <View style={styles.iconContainer}>
+                <Icon
+                  name="map-marker"
+                  color={color}
+                  size={34} // Explicit size
+                  style={[styles.icon, focused && styles.activeIcon]}
+                />
+                {focused && <View style={styles.activeIndicator} />}
+              </View>
+            ),
+            tabBarLabel: 'Map',
+          }}
+        /> */}
       <Tab.Screen
         name="TabWeatherScreen"
         component={TabWeatherScreen}
