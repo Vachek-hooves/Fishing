@@ -76,6 +76,9 @@ const TabSpotsScreen = () => {
       colors={['#003366', '#001f3f', '#000']}
       style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
+            <View style={styles.headerContainer}>
+              <Text style={styles.headerTitle}>My Fishing Spots</Text>
+            </View>
         <View style={styles.contentContainer}>
           <ScrollView
             contentContainerStyle={styles.scrollContent}
@@ -86,9 +89,6 @@ const TabSpotsScreen = () => {
                 tintColor="#ffd700"
               />
             }>
-            <View style={styles.headerContainer}>
-              <Text style={styles.headerTitle}>My Fishing Spots</Text>
-            </View>
             <SpotListContent
               isLoading={isLoading}
               loadError={loadError}
@@ -98,6 +98,7 @@ const TabSpotsScreen = () => {
             />
           </ScrollView>
         </View>
+          <View style={{height: 100}}></View>
 
         <SpotDetailModal
           visible={modalVisible}
@@ -125,6 +126,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 24,
     flexGrow: 1,
+    // height: '110%'
   },
   headerContainer: {
     padding: 10,
