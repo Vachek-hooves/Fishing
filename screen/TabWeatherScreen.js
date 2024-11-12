@@ -43,7 +43,7 @@ const TabWeatherScreen = () => {
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`,
       );
       const data = await response.json();
-      console.log(data)
+      // console.log(data)
       
       if (data.cod === 200) {
         setWeatherData(data);

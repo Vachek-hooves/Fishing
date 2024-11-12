@@ -113,6 +113,7 @@ dependencies {
     implementation("com.facebook.soloader:soloader:0.10.5")
     implementation('com.google.android.gms:play-services-base:18.+')
     implementation('com.google.android.gms:play-services-maps:18.+')
+    implementation('com.google.android.gms:play-services-location:21.+')
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
