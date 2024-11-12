@@ -89,6 +89,7 @@ const TabSpotsScreen = () => {
                 <Text style={styles.emptySubText}>
                   {/* Long press on the map to add your favorite spots */}
                   pull down to refresh
+                  
                 </Text>
               </View>
             ) : (
