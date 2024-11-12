@@ -107,7 +107,7 @@ export default FishingSpotModal
 
 const styles = StyleSheet.create({ modalContainer: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 20,
   },
