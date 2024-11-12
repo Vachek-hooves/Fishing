@@ -1,36 +1,31 @@
+import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import Fish from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 
-const SpotCard = ({spot, onPress}) => {
-  return (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => onPress(spot)}
-      activeOpacity={0.7}>
-      <LinearGradient
-        colors={['#004B87', '#006494']}
-        style={styles.cardGradient}>
-        <View style={styles.cardContent}>
-          <View style={styles.titleContainer}>
-            <Fish name="fish" size={24} color="#ffd700" />
-            <Text style={styles.cardTitle}>{spot.title}</Text>
-          </View>
-          <View style={styles.coordinatesContainer}>
-            <Icon name="location-on" size={16} color="#ffd700" />
-            <Text style={styles.coordinates}>
-              {spot.coordinate.latitude.toFixed(6)},{' '}
-              {spot.coordinate.longitude.toFixed(6)}
-            </Text>
-          </View>
+const SpotCard = ({spot, onPress}) => (
+  <TouchableOpacity
+    style={styles.card}
+    onPress={() => onPress(spot)}
+    activeOpacity={0.7}>
+    <LinearGradient colors={['#004B87', '#006494']} style={styles.cardGradient}>
+      <View style={styles.cardContent}>
+        <View style={styles.titleContainer}>
+          <Fish name="fish" size={24} color="#ffd700" />
+          <Text style={styles.cardTitle}>{spot.title}</Text>
         </View>
-      </LinearGradient>
-    </TouchableOpacity>
-  );
-};
-
-export default SpotCard;
+        <View style={styles.coordinatesContainer}>
+          <Icon name="location-on" size={16} color="#ffd700" />
+          <Text style={styles.coordinates}>
+            {spot.coordinate.latitude.toFixed(6)},{' '}
+            {spot.coordinate.longitude.toFixed(6)}
+          </Text>
+        </View>
+      </View>
+    </LinearGradient>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   card: {
@@ -72,3 +67,5 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
 });
+
+export default SpotCard;

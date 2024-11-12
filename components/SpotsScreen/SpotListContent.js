@@ -1,18 +1,13 @@
+import React from 'react';
 import {View, Text, ActivityIndicator, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Fish from 'react-native-vector-icons/Ionicons';
 import SpotCard from './SpotCard';
 
-const SpotListContent = ({
-  isLoading,
-  loadError,
-  spots,
-  onSpotPress,
-  // styles, // Pass styles as prop or create separate stylesheet
-}) => {
+const SpotListContent = ({isLoading, loadError, spots, onSpotPress}) => {
   if (isLoading) {
     return (
-      <View style={styles.emptyContainer}>
+      <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#ffd700" />
         <Text style={styles.emptyText}>Loading spots...</Text>
       </View>
@@ -21,7 +16,7 @@ const SpotListContent = ({
 
   if (loadError) {
     return (
-      <View style={styles.emptyContainer}>
+      <View style={styles.centerContainer}>
         <Icon name="error-outline" size={60} color="#ffd700" />
         <Text style={styles.emptyText}>Failed to load spots</Text>
         <Text style={styles.emptySubText}>Pull down to try again</Text>
@@ -31,7 +26,7 @@ const SpotListContent = ({
 
   if (!spots || spots.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
+      <View style={styles.centerContainer}>
         <Fish name="fish-outline" size={60} color="#ffd700" />
         <Text style={styles.emptyText}>No fishing spots saved yet</Text>
         <Text style={styles.emptySubText}>
@@ -41,17 +36,17 @@ const SpotListContent = ({
     );
   }
 
-  return spots.map(spot => (
-    <SpotCard key={spot.id} spot={spot} onPress={onSpotPress} styles={styles} />
-  ));
+  return (
+    <View>
+      {spots.map(spot => (
+        <SpotCard key={spot.id} spot={spot} onPress={onSpotPress} />
+      ))}
+    </View>
+  );
 };
 
-export default SpotListContent;
-
 const styles = StyleSheet.create({
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  centerContainer: {
     alignItems: 'center',
     paddingVertical: 40,
   },
@@ -70,3 +65,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
 });
+
+export default SpotListContent;

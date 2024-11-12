@@ -141,44 +141,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     // color: 'rgba(0,0,0,0.9)',
   },
-  // card: {
-  //   marginBottom: 16,
-  //   borderRadius: 15,
-  //   overflow: 'hidden',
-  //   elevation: 5,
-  //   shadowColor: '#000',
-  //   shadowOffset: {width: 0, height: 2},
-  //   shadowOpacity: 0.25,
-  //   shadowRadius: 3.84,
-  //   borderWidth: 1,
-  //   borderColor: '#ffd700',
-  // },
-  // cardGradient: {
-  //   borderRadius: 15,
-  // },
-  // cardContent: {
-  //   padding: 16,
-  // },
-  // titleContainer: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   marginBottom: 8,
-  // },
-  // cardTitle: {
-  //   fontSize: 18,
-  //   fontWeight: 'bold',
-  //   color: '#fff',
-  //   marginLeft: 8,
-  // },
-  // coordinatesContainer: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  // },
-  // coordinates: {
-  //   fontSize: 12,
-  //   color: '#ffd700',
-  //   marginLeft: 4,
-  // },
+  
   description: {
     color: '#fff',
     marginBottom: 12,
