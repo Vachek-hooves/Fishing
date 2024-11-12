@@ -67,7 +67,12 @@ export function AppProvider({ children }) {
 
     // Add function to update spots
     const updateSpots = async (newSpots) => {
-        setSpots(newSpots);
+        try {
+            await AsyncStorage.setItem('fishingSpots', JSON.stringify(newSpots));
+            setSpots(newSpots);
+        } catch (error) {
+            console.error('Error saving spots:', error);
+        }
     };
 
     // Create an object with all values and functions you want to share

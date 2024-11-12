@@ -7,17 +7,15 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  Dimensions,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const MarkerDetailsModal = ({ 
-  visible, 
-  onClose, 
-  marker, 
-  spots,
-  updateSpots 
-}) => {
+const { width, height } = Dimensions.get('window');
+
+const MarkerDetailsModal = ({ visible, onClose, marker, spots, updateSpots }) => {
   const handleDelete = async () => {
     Alert.alert(
       'Delete Fishing Spot',
@@ -56,14 +54,24 @@ const MarkerDetailsModal = ({
       onRequestClose={onClose}
     >
       <View style={styles.modalContainer}>
+        <TouchableOpacity 
+          style={styles.overlay}
+          activeOpacity={1} 
+          onPress={onClose}
+        />
         <View style={styles.modalContent}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Icon name="close" size={24} color="#666" />
-          </TouchableOpacity>
-
-          <ScrollView>
+          <View style={styles.headerContainer}>
+            <View style={styles.dragIndicator} />
             <Text style={styles.modalTitle}>{marker.title}</Text>
-            
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Icon name="close" size={24} color="#666" />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView 
+            style={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
             <View style={styles.detailsContainer}>
               <View style={styles.coordinatesContainer}>
                 <Text style={styles.label}>Location:</Text>
@@ -76,6 +84,27 @@ const MarkerDetailsModal = ({
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.label}>Description:</Text>
                   <Text style={styles.description}>{marker.description}</Text>
+                </View>
+              )}
+
+              {marker.images && marker.images.length > 0 && (
+                <View style={styles.imagesContainer}>
+                  <Text style={styles.label}>Photos:</Text>
+                  <ScrollView 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.imageScrollView}
+                  >
+                    {marker.images.map((image, index) => (
+                      <View key={index} style={styles.imageContainer}>
+                        <Image 
+                          source={{ uri: image.uri }} 
+                          style={styles.image}
+                          resizeMode="cover"
+                        />
+                      </View>
+                    ))}
+                  </ScrollView>
                 </View>
               )}
             </View>
@@ -100,44 +129,60 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  overlay: {
+    flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 20,
-    maxHeight: '80%',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    height: height * 0.8,
+  },
+  headerContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    alignItems: 'center',
+  },
+  dragIndicator: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#ccc',
+    borderRadius: 2,
+    marginBottom: 10,
   },
   closeButton: {
     position: 'absolute',
-    right: 20,
-    top: 20,
-    zIndex: 1,
+    right: 16,
+    top: 12,
+    padding: 4,
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
-    marginTop: 10,
     color: '#004B87',
+  },
+  scrollContent: {
+    padding: 20,
   },
   detailsContainer: {
     marginBottom: 20,
   },
   coordinatesContainer: {
     marginBottom: 15,
+    backgroundColor: '#f5f5f5',
+    padding: 12,
+    borderRadius: 8,
   },
   descriptionContainer: {
     marginBottom: 15,
+    backgroundColor: '#f5f5f5',
+    padding: 12,
+    borderRadius: 8,
   },
   label: {
     fontSize: 16,
@@ -156,6 +201,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 20,
+    marginBottom: 30,
   },
   button: {
     flexDirection: 'row',
@@ -173,6 +219,25 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  imagesContainer: {
+    marginTop: 15,
+    marginBottom: 15,
+  },
+  imageScrollView: {
+    marginTop: 10,
+  },
+  imageContainer: {
+    marginRight: 10,
+    borderRadius: 8,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  image: {
+    width: width * 0.6,
+    height: width * 0.4,
+    backgroundColor: '#f5f5f5',
   },
 });
 
