@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -26,11 +26,10 @@ const DEFAULT_LOCATION = {
 };
 
 const TabAndroidMap = () => {
-  const { spots, updateSpots } = useAppContext();
+  const { spots, updateSpots, location, updateLocation } = useAppContext();
+  const mapRef = useRef(null);
   
-  const [region, setRegion] = useState(DEFAULT_LOCATION);
   const [isLoading, setIsLoading] = useState(true);
-  const [usingDefaultLocation, setUsingDefaultLocation] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [selectedMarker, setSelectedMarker] = useState(null);
@@ -67,14 +66,14 @@ const TabAndroidMap = () => {
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           };
-          setRegion(newRegion);
-          setUsingDefaultLocation(false);
+        //   setRegion(newRegion);
+        //   setUsingDefaultLocation(false);
           setIsLoading(false);
           resolve(newRegion);
         },
         error => {
           console.log('Location error:', error);
-          setUsingDefaultLocation(true);
+        //   setUsingDefaultLocation(true);
           setIsLoading(false);
           reject(error);
         },
@@ -96,12 +95,12 @@ const TabAndroidMap = () => {
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         await getCurrentLocation();
       } else {
-        setUsingDefaultLocation(true);
+        // setUsingDefaultLocation(true);
         setIsLoading(false);
       }
     } catch (err) {
       console.warn('Location permission error:', err);
-      setUsingDefaultLocation(true);
+    //   setUsingDefaultLocation(true);
       setIsLoading(false);
     }
   }, [getCurrentLocation]);
@@ -129,6 +128,17 @@ const TabAndroidMap = () => {
     setupLocation();
   }, [setupLocation]);
 
+  const handleUserLocationChange = (event) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    console.log(latitude, longitude);
+    updateLocation({
+      latitude,
+      longitude,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    }, false);
+  };
+
   if (isLoading) {
     return <LoadingIndicator />;
   }
@@ -136,11 +146,17 @@ const TabAndroidMap = () => {
   return (
     <View style={styles.container}>
       <MapView
+        ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        initialRegion={region}
-        showsUserLocation={!usingDefaultLocation}
+        initialRegion={location || DEFAULT_LOCATION}
+        showsUserLocation={true}
         showsMyLocationButton={true}
+        onUserLocationChange={handleUserLocationChange}
+        onMapReady={() => {
+        //   setMapReady(true);
+        console.log('Map is ready');
+        }}
         onLongPress={handleMapLongPress}
       >
         {spots?.map((marker) => (
@@ -163,7 +179,7 @@ const TabAndroidMap = () => {
         ))}
       </MapView>
 
-      {usingDefaultLocation && (
+      {/* {usingDefaultLocation && (
         <TouchableOpacity 
           style={styles.locationButton}
           onPress={retryLocation}
@@ -171,7 +187,7 @@ const TabAndroidMap = () => {
           <Icon name="my-location" size={24} color="white" />
           <Text style={styles.locationButtonText}>Get My Location</Text>
         </TouchableOpacity>
-      )}
+      )} */}
 
       <FishingSpotModal
         visible={modalVisible}

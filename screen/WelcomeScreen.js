@@ -34,8 +34,8 @@ const WelcomeScreen = () => {
   }, []);
 
   return (
-    <MainLayout styles={{alignItems:'center',justifyContent:'center'}}>
-        {/* <ImageBackground style={styles.container} source={require('../assets/bg.png')}> */}
+    // <MainLayout styles={{alignItems:'center',justifyContent:'center'}}>
+        <ImageBackground style={styles.container} source={require('../assets/bg.png')}> 
 
       <View style={styles.animationContainer}>
         <LottieView
@@ -62,8 +62,8 @@ const WelcomeScreen = () => {
           Ultimate{'\n'}Fishing Diary
         </Text>
       </Animated.Text>
-    {/* </ImageBackground> */}
-        </MainLayout>
+        {/* // </MainLayout> */}
+    </ImageBackground>
   )
 }
 

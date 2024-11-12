@@ -21,7 +21,7 @@ import {
   TouchableOpacity,
   Text,
   Animated,
-  Dimensions,
+  Dimensions,Platform
 } from 'react-native';
 import {
   setupPlayer,
@@ -32,6 +32,8 @@ import {
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+console.log(Platform.OS)
+const MapComponent=Platform.OS==='ios'?TabMapScreen:TabAndroidMap
 
 const TabScreens = () => {
   const [focusedScreen, setFocusedScreen] = useState('TabMapScreen');
@@ -137,7 +139,8 @@ const TabScreens = () => {
             tabBarLabel: 'Map',
           }}
         /> */}
-      <Tab.Screen name="TabAndroidMap" component={TabAndroidMap} />
+      {/* <Tab.Screen name="TabAndroidMap" component={TabAndroidMap} /> */}
+     {<Tab.Screen name="MapComponent" component={MapComponent} />}
       <Tab.Screen
         name="TabWeatherScreen"
         component={TabWeatherScreen}
@@ -335,7 +338,7 @@ function App() {
             animation: 'fade',
             animationDuration: 1000,
           }}>
-          {currentLoader < 2 ? (
+          {/* {currentLoader < 2 ? (
             <Stack.Screen name="Welcome" options={{headerShown: false}}>
               {() => (
                 <View style={{flex: 1, backgroundColor: '#000'}}>
@@ -369,8 +372,8 @@ function App() {
               )}
             </Stack.Screen>
           ) : (
-            <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
-          )}
+          )} */}
+          <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
           <Stack.Screen name="TabScreens" component={TabScreens} />
         </Stack.Navigator>
       </NavigationContainer>

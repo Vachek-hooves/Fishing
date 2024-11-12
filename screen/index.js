@@ -5,7 +5,7 @@ import TabWeatherScreen from './TabWeatherScreen';
 import TabSpotsScreen from './TabSpotsScreen';
 import TabUserScreen from './TabUserScreen';
 import TabAndroidMap from './TabAndroidMap';
-
+import TabTestComponent from './TabTestComponent';
 export {
   TabMapScreen,
   WelcomeScreen,
@@ -14,4 +14,5 @@ export {
   TabSpotsScreen,
   TabUserScreen,
   TabAndroidMap,
+  TabTestComponent,
 };

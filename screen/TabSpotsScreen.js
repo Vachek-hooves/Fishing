@@ -170,14 +170,20 @@ const TabSpotsScreen = () => {
   };
 
   return (
-    <MainLayout>
+
+    // <MainLayout>
+      <LinearGradient
+      colors={['#003366', '#001f3f', '#000']}
+      style={styles.container}
+    >
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="#ffd700"
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor="#ffd700"
           />
         }>
         <View style={styles.headerContainer}>
@@ -203,8 +209,9 @@ const TabSpotsScreen = () => {
         spot={selectedSpot}
         onClose={handleCloseModal}
         onDelete={handleDeleteSpot}
-      />
-    </MainLayout>
+        />
+        </LinearGradient>
+  //   </MainLayout>
   );
 };
 

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const DEFAULT_LOCATION = {
@@ -15,21 +15,41 @@ const AppContext = createContext();
 export function AppProvider({ children }) {
     // Define your state values here
     const [spots, setSpots] = useState([]);
-    const [location, setLocation] = useState({
-        latitude: DEFAULT_LOCATION.latitude,
-        longitude: DEFAULT_LOCATION.longitude
-    });
-    const [usingDefaultLocation, setUsingDefaultLocation] = useState(false);
+    const [location, setLocation] = useState(null);
+    const [usingDefaultLocation, setUsingDefaultLocation] = useState(true);
     
-    // Add function to update spots
-    const updateSpots = async (newSpots) => {
-        setSpots(newSpots);
+    // Load saved location on app start
+    useEffect(() => {
+        loadSavedLocation();
+    }, []);
+
+    const loadSavedLocation = async () => {
+        try {
+            const savedLocation = await AsyncStorage.getItem('userLocation');
+            if (savedLocation) {
+                const parsedLocation = JSON.parse(savedLocation);
+                setLocation(parsedLocation);
+                setUsingDefaultLocation(false);
+            } else {
+                setLocation(DEFAULT_LOCATION);
+                setUsingDefaultLocation(true);
+            }
+        } catch (error) {
+            console.error('Error loading location:', error);
+            setLocation(DEFAULT_LOCATION);
+            setUsingDefaultLocation(true);
+        }
     };
 
-    const updateLocation = (newLocation, isDefault = false) => {
-        if (newLocation && newLocation.latitude && newLocation.longitude) {
+    const updateLocation = async (newLocation, isDefault = false) => {
+        try {
+            if (!isDefault) {
+                await AsyncStorage.setItem('userLocation', JSON.stringify(newLocation));
+            }
             setLocation(newLocation);
             setUsingDefaultLocation(isDefault);
+        } catch (error) {
+            console.error('Error saving location:', error);
         }
     };
 
@@ -45,6 +65,11 @@ export function AppProvider({ children }) {
         }
     };
 
+    // Add function to update spots
+    const updateSpots = async (newSpots) => {
+        setSpots(newSpots);
+    };
+
     // Create an object with all values and functions you want to share
     const value = {
         spots,
@@ -52,7 +77,8 @@ export function AppProvider({ children }) {
         deleteSpot,
         location,
         usingDefaultLocation,
-        updateLocation
+        updateLocation,
+        loadSavedLocation,
     };
 
     return (

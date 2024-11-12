@@ -8,18 +8,17 @@ import {
   Dimensions,
   RefreshControl,
   SafeAreaView,
-  ImageBackground,
 } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import SunCalc from 'suncalc';
 import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
-import {useAppContext} from '../store/context';
+import { useAppContext } from '../store/context';
 
 const DEFAULT_LOCATION = {
-  latitude: 37.7749, // San Francisco coordinates
-  longitude: -122.4194,
+  latitude: 37.7749,  // San Francisco coordinates
+  longitude: -122.4194
 };
 
 const getFishingRating = (moonPhase, weather) => {
@@ -46,7 +45,7 @@ const getFishingRating = (moonPhase, weather) => {
     Fog: 5,
   };
 
-  const getMoonPhaseCategory = phase => {
+  const getMoonPhaseCategory = (phase) => {
     if (phase < 0.03) return 'NEW_MOON';
     if (phase < 0.25) return 'WAXING_CRESCENT';
     if (phase < 0.28) return 'FIRST_QUARTER';
@@ -73,102 +72,90 @@ const getFishingRating = (moonPhase, weather) => {
   };
 };
 
-const getFishingAdviceForMoonPhase = moonPhase => {
+const getFishingAdviceForMoonPhase = (moonPhase) => {
   const advice = {
     NEW_MOON: {
-      general:
-        'Excellent fishing period! Fish are more active during the new moon.',
+      general: "Excellent fishing period! Fish are more active during the new moon.",
       tips: [
-        'Fish tend to feed more during this time',
-        'Best results during dawn and dusk',
-        'Use dark-colored lures',
-      ],
+        "Fish tend to feed more during this time",
+        "Best results during dawn and dusk",
+        "Use dark-colored lures",
+      ]
     },
     FULL_MOON: {
-      general: 'Peak fishing time! Fish activity is at its highest.',
+      general: "Peak fishing time! Fish activity is at its highest.",
       tips: [
-        'Fish are likely to feed throughout the night',
-        'Use light-colored or reflective lures',
-        'Focus on shallow waters',
-      ],
+        "Fish are likely to feed throughout the night",
+        "Use light-colored or reflective lures",
+        "Focus on shallow waters",
+      ]
     },
     FIRST_QUARTER: {
-      general: 'Good fishing conditions, especially during moonrise.',
+      general: "Good fishing conditions, especially during moonrise.",
       tips: [
-        'Focus on the hours around moonrise',
-        'Try both surface and deep water fishing',
-        'Moderate lure colors work best',
-      ],
+        "Focus on the hours around moonrise",
+        "Try both surface and deep water fishing",
+        "Moderate lure colors work best",
+      ]
     },
     // ... add more phases
   };
 
-  return (
-    advice[moonPhase] || {
-      general: 'Moderate fishing conditions.',
-      tips: [
-        'Try different depths',
-        'Experiment with lure colors',
-        'Focus on known fishing spots',
-      ],
-    }
-  );
+  return advice[moonPhase] || {
+    general: "Moderate fishing conditions.",
+    tips: ["Try different depths", "Experiment with lure colors", "Focus on known fishing spots"]
+  };
 };
 
-const getFishingAdviceForWeather = weather => {
+const getFishingAdviceForWeather = (weather) => {
   const advice = {
     Clear: {
       tips: [
-        'Use sunscreen and stay hydrated',
-        'Fish might be deeper in water during bright days',
-        'Early morning and late evening are best',
-      ],
+        "Use sunscreen and stay hydrated",
+        "Fish might be deeper in water during bright days",
+        "Early morning and late evening are best",
+      ]
     },
     Clouds: {
       tips: [
-        'Ideal conditions for fishing',
-        'Fish might be more active near surface',
-        'Try different depths throughout the day',
-      ],
+        "Ideal conditions for fishing",
+        "Fish might be more active near surface",
+        "Try different depths throughout the day",
+      ]
     },
     Rain: {
       tips: [
-        'Fish are often more active before and after rain',
-        'Use brighter lures for better visibility',
-        'Focus on areas where rain creates surface disturbance',
-      ],
+        "Fish are often more active before and after rain",
+        "Use brighter lures for better visibility",
+        "Focus on areas where rain creates surface disturbance",
+      ]
     },
     // ... add more weather conditions
   };
 
-  return (
-    advice[weather] || {
-      tips: [
-        'Check local fishing reports',
-        'Adjust techniques based on conditions',
-      ],
-    }
-  );
+  return advice[weather] || {
+    tips: ["Check local fishing reports", "Adjust techniques based on conditions"]
+  };
 };
 
-const getBestFishingTimes = moonPhase => {
+const getBestFishingTimes = (moonPhase) => {
   // Returns best fishing time ranges based on moon phase
   const timeRanges = {
-    NEW_MOON: ['Dawn (30min before sunrise)', 'Dusk (30min after sunset)'],
-    FULL_MOON: ['Midnight to 2AM', 'Noon to 2PM'],
+    NEW_MOON: ["Dawn (30min before sunrise)", "Dusk (30min after sunset)"],
+    FULL_MOON: ["Midnight to 2AM", "Noon to 2PM"],
     // ... add more phases
   };
 
-  return timeRanges[moonPhase] || ['Early morning', 'Late evening'];
+  return timeRanges[moonPhase] || ["Early morning", "Late evening"];
 };
 
-const FishingAdvice = ({moonPhase, weather}) => {
+const FishingAdvice = ({ moonPhase, weather }) => {
   const fishingInfo = getFishingRating(moonPhase, weather);
 
   return (
     <View style={styles.fishingAdviceContainer}>
       <Text style={styles.fishingTitle}>Fishing Forecast</Text>
-
+      
       <View style={styles.ratingContainer}>
         <Text style={styles.ratingText}>
           Today's Rating: {fishingInfo.rating}/10
@@ -176,16 +163,14 @@ const FishingAdvice = ({moonPhase, weather}) => {
         <View style={styles.ratingBar}>
           <LinearGradient
             colors={['#ffd700', '#ffa500']}
-            style={[styles.ratingFill, {width: `${fishingInfo.rating * 10}%`}]}
+            style={[styles.ratingFill, { width: `${fishingInfo.rating * 10}%` }]}
           />
         </View>
       </View>
 
       <View style={styles.adviceSection}>
         <Text style={styles.adviceTitle}>Moon Phase Advice</Text>
-        <Text style={styles.adviceText}>
-          {fishingInfo.moonPhaseAdvice.general}
-        </Text>
+        <Text style={styles.adviceText}>{fishingInfo.moonPhaseAdvice.general}</Text>
         {fishingInfo.moonPhaseAdvice.tips.map((tip, index) => (
           <View key={index} style={styles.tipContainer}>
             <Icon name="fish" size={16} color="#ffd700" />
@@ -197,39 +182,35 @@ const FishingAdvice = ({moonPhase, weather}) => {
       <View style={styles.adviceSection}>
         <Text style={styles.adviceTitle}>Best Times Today</Text>
         {fishingInfo.bestTimeRanges.map((time, index) => (
-          <Text key={index} style={styles.timeText}>
-            • {time}
-          </Text>
+          <Text key={index} style={styles.timeText}>• {time}</Text>
         ))}
       </View>
     </View>
   );
 };
 
-const formatTime = date => {
+const formatTime = (date) => {
   if (!date) return '--:--';
-  return date.toLocaleTimeString([], {
-    hour: '2-digit',
+  return date.toLocaleTimeString([], { 
+    hour: '2-digit', 
     minute: '2-digit',
-    hour12: true,
+    hour12: true 
   });
 };
 
-const SunTimesInfo = ({date, latitude, longitude}) => {
+const SunTimesInfo = ({ date, latitude, longitude }) => {
   const sunTimes = SunCalc.getTimes(date, latitude, longitude);
   const sunPosition = SunCalc.getPosition(date, latitude, longitude);
 
   return (
     <View style={styles.sunInfoContainer}>
       <Text style={styles.sunInfoTitle}>Sun Information</Text>
-
+      
       <View style={styles.sunTimesGrid}>
         <View style={styles.sunTimeItem}>
           <Icon name="weather-sunset-up" size={24} color="#ffd700" />
           <Text style={styles.sunTimeLabel}>Sunrise</Text>
-          <Text style={styles.sunTimeValue}>
-            {formatTime(sunTimes.sunrise)}
-          </Text>
+          <Text style={styles.sunTimeValue}>{formatTime(sunTimes.sunrise)}</Text>
         </View>
 
         <View style={styles.sunTimeItem}>
@@ -253,27 +234,23 @@ const SunTimesInfo = ({date, latitude, longitude}) => {
         <View style={styles.sunTimeItem}>
           <Icon name="star-face" size={24} color="#ffd700" />
           <Text style={styles.sunTimeLabel}>Nautical Dusk</Text>
-          <Text style={styles.sunTimeValue}>
-            {formatTime(sunTimes.nauticalDusk)}
-          </Text>
+          <Text style={styles.sunTimeValue}>{formatTime(sunTimes.nauticalDusk)}</Text>
         </View>
 
         <View style={styles.sunTimeItem}>
           <Icon name="brightness-5" size={24} color="#ffd700" />
           <Text style={styles.sunTimeLabel}>Night End</Text>
-          <Text style={styles.sunTimeValue}>
-            {formatTime(sunTimes.nightEnd)}
-          </Text>
+          <Text style={styles.sunTimeValue}>{formatTime(sunTimes.nightEnd)}</Text>
         </View>
       </View>
 
       <View style={styles.sunPositionContainer}>
         <Text style={styles.sunPositionTitle}>Sun Position</Text>
         <Text style={styles.sunPositionText}>
-          Altitude: {Math.round((sunPosition.altitude * 180) / Math.PI)}°
+          Altitude: {Math.round(sunPosition.altitude * 180 / Math.PI)}°
         </Text>
         <Text style={styles.sunPositionText}>
-          Azimuth: {Math.round((sunPosition.azimuth * 180) / Math.PI)}°
+          Azimuth: {Math.round(sunPosition.azimuth * 180 / Math.PI)}°
         </Text>
       </View>
     </View>
@@ -281,7 +258,7 @@ const SunTimesInfo = ({date, latitude, longitude}) => {
 };
 
 const TabMoonScreen = () => {
-  const {location} = useAppContext();
+  const { location } = useAppContext();
   const [selectedMoonPhase, setSelectedMoonPhase] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -334,117 +311,116 @@ const TabMoonScreen = () => {
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/bg/bg.png')}
-      style={{flex: 1, paddingTop: 50}}>
-      <View style={styles.calendarContainer}>
-        <CalendarStrip
-          scrollable
-          style={styles.calendarStrip}
-          calendarColor={'transparent'}
-          calendarHeaderStyle={styles.calendarHeader}
-          dateNumberStyle={styles.dateNumber}
-          dateNameStyle={styles.dateName}
-          highlightDateNumberStyle={styles.highlightDateNumber}
-          highlightDateNameStyle={styles.highlightDateName}
-          onDateSelected={handleDateSelected}
-          useIsoWeekday={false}
-          minDate={new Date().setDate(new Date().getDate() - 30)}
-          maxDate={new Date().setDate(new Date().getDate() + 60)}
-          selectedDate={new Date()}
-          daySelectionAnimation={{
-            type: 'border',
-            duration: 200,
-            borderWidth: 1,
-            borderHighlightColor: '#ffd700',
-          }}
-        />
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleDateSelected}
-            tintColor="#ffd700"
+    <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        colors={['#003366', '#001f3f', '#000']}
+        style={styles.container}>
+        <View style={styles.calendarContainer}>
+          <CalendarStrip
+            scrollable
+            style={styles.calendarStrip}
+            calendarColor={'transparent'}
+            calendarHeaderStyle={styles.calendarHeader}
+            dateNumberStyle={styles.dateNumber}
+            dateNameStyle={styles.dateName}
+            highlightDateNumberStyle={styles.highlightDateNumber}
+            highlightDateNameStyle={styles.highlightDateName}
+            onDateSelected={handleDateSelected}
+            useIsoWeekday={false}
+            minDate={new Date().setDate(new Date().getDate() - 30)}
+            maxDate={new Date().setDate(new Date().getDate() + 60)}
+            selectedDate={new Date()}
+            daySelectionAnimation={{
+              type: 'border',
+              duration: 200,
+              borderWidth: 1,
+              borderHighlightColor: '#ffd700',
+            }}
           />
-        }>
-        {selectedMoonPhase && location && (
-          <>
-            <View style={styles.moonInfoContainer}>
-              <Text style={styles.dateText}>{selectedMoonPhase.date}</Text>
+        </View>
+        
 
-              <MoonVisualization
-                phase={selectedMoonPhase.phase}
-                illumination={selectedMoonPhase.illumination}
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleDateSelected}
+              tintColor="#ffd700"
+            />
+          }>
+          {selectedMoonPhase && location && (
+            <>
+              <View style={styles.moonInfoContainer}>
+                <Text style={styles.dateText}>{selectedMoonPhase.date}</Text>
+
+                <MoonVisualization
+                  phase={selectedMoonPhase.phase}
+                  illumination={selectedMoonPhase.illumination}
+                />
+
+                <View style={styles.infoGrid}>
+                  <View style={styles.infoItem}>
+                    <Icon name="moon-full" size={30} color="#ffd700" />
+                    <Text style={styles.infoLabel}>Illumination</Text>
+                    <Text style={styles.infoValue}>
+                      {selectedMoonPhase.illumination}%
+                    </Text>
+                  </View>
+
+                  {selectedMoonPhase.times.rise && (
+                    <View style={styles.infoItem}>
+                      <Icon name="weather-sunset-up" size={30} color="#ffd700" />
+                      <Text style={styles.infoLabel}>Moonrise</Text>
+                      <Text style={styles.infoValue}>
+                        {selectedMoonPhase.times.rise.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </Text>
+                    </View>
+                  )}
+
+                  {selectedMoonPhase.times.set && (
+                    <View style={styles.infoItem}>
+                      <Icon name="weather-sunset-down" size={30} color="#ffd700" />
+                      <Text style={styles.infoLabel}>Moonset</Text>
+                      <Text style={styles.infoValue}>
+                        {selectedMoonPhase.times.set.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+
+              <SunTimesInfo 
+                date={new Date(selectedMoonPhase.date)}
+                latitude={location.latitude}
+                longitude={location.longitude}
               />
 
-              <View style={styles.infoGrid}>
-                <View style={styles.infoItem}>
-                  <Icon name="moon-full" size={30} color="#ffd700" />
-                  <Text style={styles.infoLabel}>Illumination</Text>
-                  <Text style={styles.infoValue}>
-                    {selectedMoonPhase.illumination}%
-                  </Text>
-                </View>
-
-                {selectedMoonPhase.times.rise && (
-                  <View style={styles.infoItem}>
-                    <Icon name="weather-sunset-up" size={30} color="#ffd700" />
-                    <Text style={styles.infoLabel}>Moonrise</Text>
-                    <Text style={styles.infoValue}>
-                      {selectedMoonPhase.times.rise.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </Text>
-                  </View>
-                )}
-
-                {selectedMoonPhase.times.set && (
-                  <View style={styles.infoItem}>
-                    <Icon
-                      name="weather-sunset-down"
-                      size={30}
-                      color="#ffd700"
-                    />
-                    <Text style={styles.infoLabel}>Moonset</Text>
-                    <Text style={styles.infoValue}>
-                      {selectedMoonPhase.times.set.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </View>
-
-            <SunTimesInfo
-              date={new Date(selectedMoonPhase.date)}
-              latitude={location.latitude}
-              longitude={location.longitude}
-            />
-
-            <FishingAdvice
-              moonPhase={selectedMoonPhase.phase}
-              weather="Clear"
-            />
-          </>
-        )}
-        <View style={{height: 100}}></View>
-      </ScrollView>
-    </ImageBackground>
+              <FishingAdvice 
+                moonPhase={selectedMoonPhase.phase}
+                weather="Clear"
+              />
+            </>
+          )}
+          <View style={{height: 100}}></View>
+        </ScrollView>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    // backgroundColor: '#003366',
+    backgroundColor: '#003366',
   },
   container: {
     flex: 1,
@@ -454,14 +430,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: 'transparent',
     marginBottom: 10,
-    // backgroundColor: '#003366',
   },
   calendarStrip: {
     height: 130,
     padding: 10,
     borderRadius: 12,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   scrollView: {
     flex: 1,
@@ -492,7 +466,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     marginTop: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   dateText: {
     color: '#fff',
@@ -559,11 +532,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   fishingAdviceContainer: {
-    // backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 20,
     padding: 20,
     marginTop: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   fishingTitle: {
     fontSize: 20,
@@ -574,7 +546,6 @@ const styles = StyleSheet.create({
   },
   ratingContainer: {
     marginBottom: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   ratingText: {
     color: '#fff',
@@ -621,11 +592,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   sunInfoContainer: {
-    // backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 20,
     padding: 20,
     marginTop: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   sunInfoTitle: {
     fontSize: 20,

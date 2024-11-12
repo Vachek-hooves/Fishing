@@ -487,19 +487,12 @@ const TabMapScreen = () => {
       {initialRegion && (
         <MapView
           style={styles.map}
-          provider={Platform.select({
-            ios: null,
-            android: 'google'
-          })}
           initialRegion={initialRegion}
           showsUserLocation={!usingDefaultLocation}
           showsMyLocationButton={!usingDefaultLocation}
           onLongPress={handleMapLongPress}
           customMapStyle={waterOrientedMapStyle}
-          mapType={Platform.select({
-            ios: 'terrain',
-            android: 'standard' || 'terrain'  // or 'terrain' if available
-          })}
+          mapType="terrain"
           showsBuildings={false}
           showsTraffic={false}
           showsIndoors={false}

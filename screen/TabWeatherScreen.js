@@ -97,6 +97,15 @@ const TabWeatherScreen = () => {
           </Text>
         </View>
       );
+      
+    }else{
+      return (
+        <View style={styles.defaultLocationBanner}>
+          <Icon name="information" size={20} color="#ffd700" /><Text style={styles.defaultLocationText}>
+            This is your current location 
+          </Text>
+        </View>
+      )
     }
     return null;
   };
@@ -106,13 +115,14 @@ const TabWeatherScreen = () => {
   }
 
   return (
-    // <LinearGradient
-    //   colors={['#003366', '#004d99', '#0066cc']} // Deep blue to lighter blue
-    //   style={styles.mainContainer}
-    //   start={{x: 0, y: 0}}
-    //   end={{x: 1, y: 1}}>
+    <LinearGradient
+      colors={['#003366', '#004d99', '#0066cc']} // Deep blue to lighter blue
+      style={styles.mainContainer}
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 1}}>
+
     
-<MainLayout>
+{/* <MainLayout> */}
     
       <ScrollView 
         style={styles.scrollView}
@@ -145,7 +155,7 @@ const TabWeatherScreen = () => {
                 name={getWeatherIcon(weatherData.weather[0].id)} 
                 size={80} 
                 color="#333" 
-              />
+                />
               <View style={styles.tempContainer}>
                 <Text style={styles.temperature}>{Math.round(weatherData.main.temp)}°C</Text>
                 <Text style={styles.weatherDescription}>
@@ -224,7 +234,8 @@ const TabWeatherScreen = () => {
       </ScrollView>
         <View style={styles.bottomPadding} />
       
-        </MainLayout>
+        {/* // </MainLayout> */}
+  </LinearGradient>
   );
 };
 
