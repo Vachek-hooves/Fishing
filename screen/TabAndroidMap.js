@@ -9,7 +9,6 @@ import {
   Text,
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
-// import Geolocation from 'react-native-geolocation-service';
 import Geolocation from '@react-native-community/geolocation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Fish from 'react-native-vector-icons/Ionicons';
@@ -26,12 +25,9 @@ const DEFAULT_LOCATION = {
   longitudeDelta: 0.0421,
 };
 
-Geolocation.getCurrentPosition(info=>console.log(info))
-
 const TabAndroidMap = () => {
   const { spots, updateSpots } = useAppContext();
   
-  // States
   const [region, setRegion] = useState(DEFAULT_LOCATION);
   const [isLoading, setIsLoading] = useState(true);
   const [usingDefaultLocation, setUsingDefaultLocation] = useState(true);
@@ -40,7 +36,15 @@ const TabAndroidMap = () => {
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [newMarkerCoordinate, setNewMarkerCoordinate] = useState(null);
 
-  // Load markers
+  // Configure Geolocation
+  useEffect(() => {
+    Geolocation.setRNConfiguration({
+      skipPermissionRequests: false,
+      authorizationLevel: 'whenInUse',
+      locationProvider: 'auto'
+    });
+  }, []);
+
   const loadMarkers = useCallback(async () => {
     try {
       const savedSpots = await AsyncStorage.getItem('fishingSpots');
@@ -52,50 +56,56 @@ const TabAndroidMap = () => {
     }
   }, [updateSpots]);
 
-  // Location handling
+  const getCurrentLocation = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      Geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          const newRegion = {
+            latitude,
+            longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          };
+          setRegion(newRegion);
+          setUsingDefaultLocation(false);
+          setIsLoading(false);
+          resolve(newRegion);
+        },
+        error => {
+          console.log('Location error:', error);
+          setUsingDefaultLocation(true);
+          setIsLoading(false);
+          reject(error);
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 15000,
+          maximumAge: 10000,
+        }
+      );
+    });
+  }, []);
+
   const setupLocation = useCallback(async () => {
     try {
       const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message: 'This app needs access to your location.',
-          buttonPositive: 'OK',
-          buttonNegative: 'Cancel',
-        }
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
       );
 
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setRegion({
-              latitude,
-              longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            });
-            setUsingDefaultLocation(false);
-          },
-          (error) => {
-            console.log(error);
-            Alert.alert('Error', 'Unable to get location');
-          },
-          { 
-            enableHighAccuracy: false,
-            timeout: 15000,
-            maximumAge: 10000
-          }
-        );
+        await getCurrentLocation();
+      } else {
+        setUsingDefaultLocation(true);
+        setIsLoading(false);
       }
     } catch (err) {
-      console.warn(err);
-    } finally {
+      console.warn('Location permission error:', err);
+      setUsingDefaultLocation(true);
       setIsLoading(false);
     }
-  }, []);
+  }, [getCurrentLocation]);
 
-  // Initialize
   useEffect(() => {
     const initialize = async () => {
       await loadMarkers();
@@ -104,7 +114,6 @@ const TabAndroidMap = () => {
     initialize();
   }, [loadMarkers, setupLocation]);
 
-  // Handlers
   const handleMapLongPress = useCallback((event) => {
     setNewMarkerCoordinate(event.nativeEvent.coordinate);
     setModalVisible(true);
