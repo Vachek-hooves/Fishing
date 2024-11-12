@@ -98,7 +98,7 @@ const TabSpotsScreen = () => {
             />
           </ScrollView>
         </View>
-          <View style={{height: 100}}></View>
+          <View style={{height: 120}}></View>
 
         <SpotDetailModal
           visible={modalVisible}
