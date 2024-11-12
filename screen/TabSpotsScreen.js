@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,6 +11,7 @@ import {
   Modal,
   Alert,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -27,8 +28,75 @@ const {width} = Dimensions.get('window');
 const TabSpotsScreen = () => {
   const {spots, updateSpots, deleteSpot} = useAppContext();
   const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    loadSpots();
+  }, []);
+
+  const loadSpots = async () => {
+    setIsLoading(true);
+    setLoadError(false);
+    try {
+      const savedSpots = await AsyncStorage.getItem('fishingSpots');
+      if (savedSpots) {
+        updateSpots(JSON.parse(savedSpots));
+      }
+    } catch (error) {
+      console.error('Error loading spots:', error);
+      setLoadError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadSpots();
+    setRefreshing(false);
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <View style={styles.emptyContainer}>
+          <ActivityIndicator size="large" color="#ffd700" />
+          <Text style={styles.emptyText}>Loading spots...</Text>
+        </View>
+      );
+    }
+
+    if (loadError) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Icon name="error-outline" size={60} color="#ffd700" />
+          <Text style={styles.emptyText}>Failed to load spots</Text>
+          <Text style={styles.emptySubText}>
+            Pull down to try again
+          </Text>
+        </View>
+      );
+    }
+
+    if (spots.length === 0) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Fish name="fish-outline" size={60} color="#ffd700" />
+          <Text style={styles.emptyText}>No fishing spots saved yet</Text>
+          <Text style={styles.emptySubText}>
+            Long press on the map to add your favorite spots
+          </Text>
+        </View>
+      );
+    }
+
+    return spots.map(spot => (
+      <SpotCard key={spot.id} spot={spot} onPress={handleSpotPress} />
+    ));
+  };
 
   const handleSpotPress = useCallback(spot => {
     setSelectedSpot(spot);
@@ -39,19 +107,6 @@ const TabSpotsScreen = () => {
     setModalVisible(false);
     setSelectedSpot(null);
   }, []);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    try {
-      const savedSpots = await AsyncStorage.getItem('fishingSpots');
-      if (savedSpots) {
-        updateSpots(JSON.parse(savedSpots));
-      }
-    } catch (error) {
-      console.error('Error refreshing spots:', error);
-    }
-    setRefreshing(false);
-  };
 
   const handleDeleteSpot = async spotId => {
     const success = await deleteSpot(spotId);
@@ -82,21 +137,7 @@ const TabSpotsScreen = () => {
             <View style={styles.headerContainer}>
               <Text style={styles.headerTitle}>My Fishing Spots</Text>
             </View>
-            {spots.length === 0 ? (
-              <View style={styles.emptyContainer}>
-                <Fish name="fish-outline" size={60} color="#ffd700" />
-                <Text style={styles.emptyText}>No fishing spots saved yet</Text>
-                <Text style={styles.emptySubText}>
-                  {/* Long press on the map to add your favorite spots */}
-                  pull down to refresh
-                  
-                </Text>
-              </View>
-            ) : (
-              spots.map(spot => (
-                <SpotCard key={spot.id} spot={spot} onPress={handleSpotPress} />
-              ))
-            )}
+            {renderContent()}
           </ScrollView>
         </View>
 
