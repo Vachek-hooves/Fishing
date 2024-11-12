@@ -9,7 +9,8 @@ import {
   Platform,
   PermissionsAndroid,
   RefreshControl,
-  ImageBackground
+  ImageBackground,
+  SafeAreaView
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -124,6 +125,7 @@ const TabWeatherScreen = () => {
     
 {/* <MainLayout> */}
     
+<SafeAreaView style={{marginTop: Platform.OS === 'ios' ? 40 :10}}/>
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
@@ -245,7 +247,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    marginTop: 60,
+    // marginTop: 20,
   },
   scrollViewContent: {
     flexGrow: 1,

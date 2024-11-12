@@ -24,6 +24,7 @@ import * as ImagePicker from 'react-native-image-picker';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
 import Fish from 'react-native-vector-icons/Ionicons'
 import { useAppContext } from '../store/context';
+import MapPressNotice from '../components/notice/MapPressNotice';
 
 const waterOrientedMapStyle = [
   {
@@ -520,6 +521,7 @@ const TabMapScreen = () => {
           ))}
         </MapView>
       )}
+      <MapPressNotice />
 
       {/* {usingDefaultLocation && (
         <TouchableOpacity 

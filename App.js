@@ -21,7 +21,8 @@ import {
   TouchableOpacity,
   Text,
   Animated,
-  Dimensions,Platform
+  Dimensions,
+  Platform,
 } from 'react-native';
 import {
   setupPlayer,
@@ -32,8 +33,8 @@ import {
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-console.log(Platform.OS)
-const MapComponent=Platform.OS==='ios'?TabMapScreen:TabAndroidMap
+console.log(Platform.OS);
+const MapComponent = Platform.OS === 'ios' ? TabMapScreen : TabAndroidMap;
 
 const TabScreens = () => {
   const [focusedScreen, setFocusedScreen] = useState('TabMapScreen');
@@ -103,6 +104,38 @@ const TabScreens = () => {
           setFocusedScreen(route.name);
         },
       }}>
+         <Tab.Screen
+        name="TabUserScreen"
+        component={TabUserScreen}
+        options={{
+          tabBarLabel: 'User',
+          tabBarIcon: ({color, focused}) => (
+            <View style={styles.iconContainer}>
+              <Icon name="account" color={color} size={34} />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+          name="MapComponent"
+          component={MapComponent}
+          options={{
+            tabBarIcon: ({color, focused}) => {
+              return (
+                <View style={styles.iconContainer}>
+                  <Icon
+                    name="map-marker"
+                    color={color}
+                    size={34}
+                    style={[styles.icon, focused && styles.activeIcon]}
+                  />
+                  {focused && <View style={styles.activeIndicator} />}
+                </View>
+              );
+            },
+            tabBarLabel: 'Map',
+          }}
+        />
       <Tab.Screen
         name="TabMoonScreen"
         component={TabMoonScreen}
@@ -140,7 +173,11 @@ const TabScreens = () => {
           }}
         /> */}
       {/* <Tab.Screen name="TabAndroidMap" component={TabAndroidMap} /> */}
-     {<Tab.Screen name="MapComponent" component={MapComponent} />}
+
+      
+        
+      
+
       <Tab.Screen
         name="TabWeatherScreen"
         component={TabWeatherScreen}
@@ -177,18 +214,7 @@ const TabScreens = () => {
           tabBarLabel: 'Spots',
         }}
       />
-      <Tab.Screen
-        name="TabUserScreen"
-        component={TabUserScreen}
-        options={{
-          tabBarLabel: 'User',
-          tabBarIcon: ({color, focused}) => (
-            <View style={styles.iconContainer}>
-              <Icon name="account" color={color} size={34} />
-            </View>
-          ),
-        }}
-      />
+     
       <Tab.Screen
         name="Sound"
         component={BlankScreen}

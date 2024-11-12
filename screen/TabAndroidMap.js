@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import {
   StyleSheet,
   View,
@@ -8,15 +8,16 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Fish from 'react-native-vector-icons/Ionicons';
 import LoadingIndicator from '../components/ui/LoadingIndicator';
-import { useAppContext } from '../store/context';
+import {useAppContext} from '../store/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FishingSpotModal from '../components/MapScreen/FishingSpotModal';
 import MarkerDetailsModal from '../components/MapScreen/MarkerDetailsModal';
+import MapPressNotice from '../components/notice/MapPressNotice';
 
 const DEFAULT_LOCATION = {
   latitude: 37.7749,
@@ -26,9 +27,9 @@ const DEFAULT_LOCATION = {
 };
 
 const TabAndroidMap = () => {
-  const { spots, updateSpots, location, updateLocation } = useAppContext();
+  const {spots, updateSpots, location, updateLocation} = useAppContext();
   const mapRef = useRef(null);
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
@@ -40,7 +41,7 @@ const TabAndroidMap = () => {
     Geolocation.setRNConfiguration({
       skipPermissionRequests: false,
       authorizationLevel: 'whenInUse',
-      locationProvider: 'auto'
+      locationProvider: 'auto',
     });
   }, []);
 
@@ -59,21 +60,21 @@ const TabAndroidMap = () => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         position => {
-          const { latitude, longitude } = position.coords;
+          const {latitude, longitude} = position.coords;
           const newRegion = {
             latitude,
             longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           };
-        //   setRegion(newRegion);
-        //   setUsingDefaultLocation(false);
+          //   setRegion(newRegion);
+          //   setUsingDefaultLocation(false);
           setIsLoading(false);
           resolve(newRegion);
         },
         error => {
           console.log('Location error:', error);
-        //   setUsingDefaultLocation(true);
+          //   setUsingDefaultLocation(true);
           setIsLoading(false);
           reject(error);
         },
@@ -81,7 +82,7 @@ const TabAndroidMap = () => {
           enableHighAccuracy: false,
           timeout: 15000,
           maximumAge: 10000,
-        }
+        },
       );
     });
   }, []);
@@ -89,7 +90,7 @@ const TabAndroidMap = () => {
   const setupLocation = useCallback(async () => {
     try {
       const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       );
 
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -100,7 +101,7 @@ const TabAndroidMap = () => {
       }
     } catch (err) {
       console.warn('Location permission error:', err);
-    //   setUsingDefaultLocation(true);
+      //   setUsingDefaultLocation(true);
       setIsLoading(false);
     }
   }, [getCurrentLocation]);
@@ -113,12 +114,12 @@ const TabAndroidMap = () => {
     initialize();
   }, [loadMarkers, setupLocation]);
 
-  const handleMapLongPress = useCallback((event) => {
+  const handleMapLongPress = useCallback(event => {
     setNewMarkerCoordinate(event.nativeEvent.coordinate);
     setModalVisible(true);
   }, []);
 
-  const handleMarkerPress = useCallback((marker) => {
+  const handleMarkerPress = useCallback(marker => {
     setSelectedMarker(marker);
     setDetailsModalVisible(true);
   }, []);
@@ -128,15 +129,18 @@ const TabAndroidMap = () => {
     setupLocation();
   }, [setupLocation]);
 
-  const handleUserLocationChange = (event) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
+  const handleUserLocationChange = event => {
+    const {latitude, longitude} = event.nativeEvent.coordinate;
     console.log(latitude, longitude);
-    updateLocation({
-      latitude,
-      longitude,
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
-    }, false);
+    updateLocation(
+      {
+        latitude,
+        longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      },
+      false,
+    );
   };
 
   if (isLoading) {
@@ -154,30 +158,31 @@ const TabAndroidMap = () => {
         showsMyLocationButton={true}
         onUserLocationChange={handleUserLocationChange}
         onMapReady={() => {
-        //   setMapReady(true);
-        console.log('Map is ready');
+          //   setMapReady(true);
+          console.log('Map is ready');
         }}
-        onLongPress={handleMapLongPress}
-      >
-        {spots?.map((marker) => (
+        onLongPress={handleMapLongPress}>
+       
+        {spots?.map(marker => (
           <Marker
             key={marker.id}
             coordinate={marker.coordinate}
             title={marker.title}
             description={marker.description}
-            onPress={() => handleMarkerPress(marker)}
-          >
+            onPress={() => handleMarkerPress(marker)}>
             <View style={styles.markerContainer}>
-              <Fish name="fish" size={40} color="#08313a" />
-              {marker.title && (
+              <Fish name="fish" size={32} color="#08313a" />
+
+              {/* {marker.title && (
                 <View style={styles.markerLabelContainer}>
                   <Text style={styles.markerLabel}>{marker.title}</Text>
                 </View>
-              )}
+              )} */}
             </View>
           </Marker>
         ))}
       </MapView>
+      <MapPressNotice />
 
       {/* {usingDefaultLocation && (
         <TouchableOpacity 
@@ -231,6 +236,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     borderWidth: 1,
     borderColor: '#004B87',
+    height: 20,
   },
   markerLabel: {
     color: '#004B87',

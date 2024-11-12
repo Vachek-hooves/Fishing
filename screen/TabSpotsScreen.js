@@ -10,6 +10,7 @@ import {
   RefreshControl,
   Modal,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -170,48 +171,49 @@ const TabSpotsScreen = () => {
   };
 
   return (
-
-    // <MainLayout>
-      <LinearGradient
+    <LinearGradient
       colors={['#003366', '#001f3f', '#000']}
       style={styles.container}
     >
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor="#ffd700"
-          />
-        }>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>My Fishing Spots</Text>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.contentContainer}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="#ffd700"
+              />
+            }
+          >
+            <View style={styles.headerContainer}>
+              <Text style={styles.headerTitle}>My Fishing Spots</Text>
+            </View>
+            {spots.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Fish name="fish-outline" size={60} color="#ffd700" />
+                <Text style={styles.emptyText}>No fishing spots saved yet</Text>
+                <Text style={styles.emptySubText}>
+                  Long press on the map to add your favorite spots
+                </Text>
+              </View>
+            ) : (
+              spots.map(spot => (
+                <SpotCard key={spot.id} spot={spot} onPress={handleSpotPress} />
+              ))
+            )}
+          </ScrollView>
         </View>
-        {spots.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Fish name="fish-outline" size={60} color="#ffd700" />
-            <Text style={styles.emptyText}>No fishing spots saved yet</Text>
-            <Text style={styles.emptySubText}>
-              Long press on the map to add your favorite spots
-            </Text>
-          </View>
-        ) : (
-          spots.map(spot => (
-            <SpotCard key={spot.id} spot={spot} onPress={handleSpotPress} />
-          ))
-        )}
-      </ScrollView>
 
-      <SpotDetailModal
-        visible={modalVisible}
-        spot={selectedSpot}
-        onClose={handleCloseModal}
-        onDelete={handleDeleteSpot}
+        <SpotDetailModal
+          visible={modalVisible}
+          spot={selectedSpot}
+          onClose={handleCloseModal}
+          onDelete={handleDeleteSpot}
         />
-        </LinearGradient>
-  //   </MainLayout>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -219,16 +221,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  safeArea: {
+    flex: 1,
+    marginTop: Platform.OS === 'ios' ? 10 : 10,
+  },
+  contentContainer: {
+    flex: 1,
+  },
   scrollContent: {
     paddingHorizontal: 16,
     paddingBottom: 24,
-    paddingTop: 60,
-    // backgroundColor:'rgba(0,0,0,0.2)'
+    flexGrow: 1,
   },
   headerContainer: {
     padding: 10,
     borderRadius: 12,
     backgroundColor: 'rgba(0,0,0,0.5)',
+    marginBottom: 16,
   },
   headerTitle: {
     fontSize: 24,

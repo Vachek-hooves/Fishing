@@ -11,15 +11,20 @@ import {
 } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import SunCalc from 'suncalc';
-import Geolocation from 'react-native-geolocation-service';
+// import Geolocation from 'react-native-geolocation-service';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
+import { getFishingAdviceForMoonPhase,getFishingAdviceForWeather } from '../components/MoonScreen';
+// import { getFishingRating } from '../components/MoonScreen/utils';
 import { useAppContext } from '../store/context';
 
-const DEFAULT_LOCATION = {
-  latitude: 37.7749,  // San Francisco coordinates
-  longitude: -122.4194
-};
+
+
+// const DEFAULT_LOCATION = {
+//   latitude: 37.7749,  // San Francisco coordinates
+//   longitude: -122.4194
+// };
+
 
 const getFishingRating = (moonPhase, weather) => {
   // Moon phase fishing ratings (0-10 scale)
@@ -72,78 +77,12 @@ const getFishingRating = (moonPhase, weather) => {
   };
 };
 
-const getFishingAdviceForMoonPhase = (moonPhase) => {
-  const advice = {
-    NEW_MOON: {
-      general: "Excellent fishing period! Fish are more active during the new moon.",
-      tips: [
-        "Fish tend to feed more during this time",
-        "Best results during dawn and dusk",
-        "Use dark-colored lures",
-      ]
-    },
-    FULL_MOON: {
-      general: "Peak fishing time! Fish activity is at its highest.",
-      tips: [
-        "Fish are likely to feed throughout the night",
-        "Use light-colored or reflective lures",
-        "Focus on shallow waters",
-      ]
-    },
-    FIRST_QUARTER: {
-      general: "Good fishing conditions, especially during moonrise.",
-      tips: [
-        "Focus on the hours around moonrise",
-        "Try both surface and deep water fishing",
-        "Moderate lure colors work best",
-      ]
-    },
-    // ... add more phases
-  };
-
-  return advice[moonPhase] || {
-    general: "Moderate fishing conditions.",
-    tips: ["Try different depths", "Experiment with lure colors", "Focus on known fishing spots"]
-  };
-};
-
-const getFishingAdviceForWeather = (weather) => {
-  const advice = {
-    Clear: {
-      tips: [
-        "Use sunscreen and stay hydrated",
-        "Fish might be deeper in water during bright days",
-        "Early morning and late evening are best",
-      ]
-    },
-    Clouds: {
-      tips: [
-        "Ideal conditions for fishing",
-        "Fish might be more active near surface",
-        "Try different depths throughout the day",
-      ]
-    },
-    Rain: {
-      tips: [
-        "Fish are often more active before and after rain",
-        "Use brighter lures for better visibility",
-        "Focus on areas where rain creates surface disturbance",
-      ]
-    },
-    // ... add more weather conditions
-  };
-
-  return advice[weather] || {
-    tips: ["Check local fishing reports", "Adjust techniques based on conditions"]
-  };
-};
-
 const getBestFishingTimes = (moonPhase) => {
   // Returns best fishing time ranges based on moon phase
   const timeRanges = {
     NEW_MOON: ["Dawn (30min before sunrise)", "Dusk (30min after sunset)"],
     FULL_MOON: ["Midnight to 2AM", "Noon to 2PM"],
-    // ... add more phases
+    // ...  more phases
   };
 
   return timeRanges[moonPhase] || ["Early morning", "Late evening"];
@@ -410,8 +349,9 @@ const TabMoonScreen = () => {
               />
             </>
           )}
-          <View style={{height: 100}}></View>
+          {/* <View style={{height: 100}}></View> */}
         </ScrollView>
+        <View style={{height: Platform.OS === 'ios' ? 90 : 130}}></View>
       </LinearGradient>
     </SafeAreaView>
   );
