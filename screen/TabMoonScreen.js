@@ -201,10 +201,11 @@ const TabMoonScreen = () => {
   const [selectedMoonPhase, setSelectedMoonPhase] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     if (location && location.latitude && location.longitude) {
-      handleDateSelected(new Date());
+      handleDateSelected(selectedDate);
       setIsLoading(false);
     }
   }, [location]);
@@ -213,6 +214,7 @@ const TabMoonScreen = () => {
     if (!location || !date) return;
 
     const selectedDate = date._d || new Date(date);
+    setSelectedDate(selectedDate);
 
     const moonIllum = SunCalc.getMoonIllumination(selectedDate);
     const moonTimes = SunCalc.getMoonTimes(
@@ -268,7 +270,7 @@ const TabMoonScreen = () => {
             useIsoWeekday={false}
             minDate={new Date().setDate(new Date().getDate() - 30)}
             maxDate={new Date().setDate(new Date().getDate() + 60)}
-            selectedDate={new Date()}
+            selectedDate={selectedDate}
             daySelectionAnimation={{
               type: 'border',
               duration: 200,
