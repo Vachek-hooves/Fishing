@@ -241,7 +241,7 @@ const TabScreens = () => {
               <AntIcon
                 name="sound"
                 color={isSoundOn ? 'green' : 'red'}
-                size={34}
+                size={32}
               />
               <Text
                 style={{
@@ -255,6 +255,16 @@ const TabScreens = () => {
             </TouchableOpacity>
           ),
         }}
+        // options={{
+        //   tabBarButton:({color,size,focused})=>(
+        //     <View style={styles.iconContainer} onPress={handleSoundToggle}>
+        //       <Icon name="sound" color={color} size={size}  style={[styles.icon, focused && styles.activeIcon]}/>
+        //       {focused && <View style={styles.activeIndicator} />}
+        //     </View>
+        //   ),
+        //   tabBarLabel: 'Sound',
+          
+        // }}
       />
     </Tab.Navigator>
   );
