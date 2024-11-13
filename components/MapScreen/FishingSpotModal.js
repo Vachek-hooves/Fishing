@@ -9,11 +9,13 @@ import {
   Alert,
   Image,
   ScrollView,
+  Dimensions
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+const { width, height } = Dimensions.get('window');
 const FishingSpotModal = ({ visible, onClose, coordinate, spots, updateSpots }) => {
   const [markerTitle, setMarkerTitle] = useState('');
   const [markerDescription, setMarkerDescription] = useState('');
@@ -97,7 +99,6 @@ const FishingSpotModal = ({ visible, onClose, coordinate, spots, updateSpots }) 
       <View style={styles.modalContainer}>
         <ScrollView style={styles.modalContent}>
           <Text style={styles.modalTitle}>Add Fishing Spot</Text>
-          
           <TextInput
             style={styles.input}
             placeholder="Spot Title"
@@ -172,6 +173,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     maxHeight: '90%',
+    width: width-20,
+    // height: height*0.4,
+    
   },
   modalTitle: {
     fontSize: 20,
