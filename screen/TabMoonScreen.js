@@ -17,76 +17,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import { getFishingAdviceForMoonPhase,getFishingAdviceForWeather } from '../components/MoonScreen';
 // import { getFishingRating } from '../components/MoonScreen/utils';
 import { useAppContext } from '../store/context';
+import { getFishingRating } from '../components/MoonScreen/utils';
 
-
-
-// const DEFAULT_LOCATION = {
-//   latitude: 37.7749,  // San Francisco coordinates
-//   longitude: -122.4194
-// };
-
-
-const getFishingRating = (moonPhase, weather) => {
-  // Moon phase fishing ratings (0-10 scale)
-  const moonRatings = {
-    NEW_MOON: 8, // Excellent for fishing
-    WAXING_CRESCENT: 7,
-    FIRST_QUARTER: 6,
-    WAXING_GIBBOUS: 5,
-    FULL_MOON: 9, // Best time for fishing
-    WANING_GIBBOUS: 5,
-    LAST_QUARTER: 6,
-    WANING_CRESCENT: 7,
-  };
-
-  // Weather condition ratings (0-10 scale)
-  const weatherRatings = {
-    Clear: 8,
-    Clouds: 7,
-    Rain: 4,
-    Thunderstorm: 2,
-    Snow: 3,
-    Mist: 6,
-    Fog: 5,
-  };
-
-  const getMoonPhaseCategory = (phase) => {
-    if (phase < 0.03) return 'NEW_MOON';
-    if (phase < 0.25) return 'WAXING_CRESCENT';
-    if (phase < 0.28) return 'FIRST_QUARTER';
-    if (phase < 0.47) return 'WAXING_GIBBOUS';
-    if (phase < 0.53) return 'FULL_MOON';
-    if (phase < 0.72) return 'WANING_GIBBOUS';
-    if (phase < 0.78) return 'LAST_QUARTER';
-    if (phase < 0.97) return 'WANING_CRESCENT';
-    return 'NEW_MOON';
-  };
-
-  const moonCategory = getMoonPhaseCategory(moonPhase);
-  const moonScore = moonRatings[moonCategory] || 5;
-  const weatherScore = weatherRatings[weather] || 5;
-
-  // Calculate overall rating
-  const overallRating = (moonScore + weatherScore) / 2;
-
-  return {
-    rating: Math.round(overallRating),
-    moonPhaseAdvice: getFishingAdviceForMoonPhase(moonCategory),
-    weatherAdvice: getFishingAdviceForWeather(weather),
-    bestTimeRanges: getBestFishingTimes(moonCategory),
-  };
-};
-
-const getBestFishingTimes = (moonPhase) => {
-  // Returns best fishing time ranges based on moon phase
-  const timeRanges = {
-    NEW_MOON: ["Dawn (30min before sunrise)", "Dusk (30min after sunset)"],
-    FULL_MOON: ["Midnight to 2AM", "Noon to 2PM"],
-    // ...  more phases
-  };
-
-  return timeRanges[moonPhase] || ["Early morning", "Late evening"];
-};
 
 const FishingAdvice = ({ moonPhase, weather }) => {
   const fishingInfo = getFishingRating(moonPhase, weather);
@@ -212,7 +144,8 @@ const TabMoonScreen = () => {
 
   const handleDateSelected = date => {
     if (!location || !date) return;
-
+console.log(date._d)
+console.log(date)
     const selectedDate = date._d || new Date(date);
     setSelectedDate(selectedDate);
 
@@ -305,7 +238,7 @@ const TabMoonScreen = () => {
                 <View style={styles.infoGrid}>
                   <View style={styles.infoItem}>
                     <Icon name="moon-full" size={30} color="#ffd700" />
-                    <Text style={styles.infoLabel}>Illumination</Text>
+                    <Text style={styles.infoLabel}>Illumin-ion</Text>
                     <Text style={styles.infoValue}>
                       {selectedMoonPhase.illumination}%
                     </Text>

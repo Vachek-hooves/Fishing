@@ -131,7 +131,7 @@ const TabAndroidMap = () => {
 
   const handleUserLocationChange = event => {
     const {latitude, longitude} = event.nativeEvent.coordinate;
-    console.log(latitude, longitude);
+    // console.log(latitude, longitude);
     updateLocation(
       {
         latitude,
