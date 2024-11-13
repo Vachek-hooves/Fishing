@@ -138,7 +138,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: height * 0.8,
+    height: '100%',
+    width: width,
   },
   headerContainer: {
     paddingHorizontal: 20,
