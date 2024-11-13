@@ -33,7 +33,7 @@ import {
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-console.log(Platform.OS);
+// console.log(Platform.OS);
 const MapComponent = Platform.OS === 'ios' ? TabMapScreen : TabAndroidMap;
 
 const TabScreens = () => {

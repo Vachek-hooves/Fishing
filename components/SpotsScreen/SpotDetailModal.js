@@ -11,6 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const {width} = Dimensions.get('window');
+
 export const SpotDetailModal = ({visible, spot, onClose, onDelete}) => {
   if (!spot) return null;
 
@@ -121,6 +122,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    width:width,
+    height:'100%'
   },
   modalHeader: {
     flexDirection: 'row',
