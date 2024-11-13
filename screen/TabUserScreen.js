@@ -115,16 +115,20 @@ const TabUserScreen = () => {
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -64 : 0}
       >
         <LinearGradient
           colors={['#003366', '#001f3f', '#000']}
           style={styles.container}>
           <ScrollView
             style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingBottom: Platform.OS === 'android' ? 100 : 20 }
+            ]}
             keyboardShouldPersistTaps="handled"
-            bounces={false}>
+            showsVerticalScrollIndicator={false}
+          >
             
             {isExistingUser && (
               <View style={styles.welcomeContainer}>

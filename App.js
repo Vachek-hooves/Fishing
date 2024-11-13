@@ -82,7 +82,14 @@ const TabScreens = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: {
+          ...styles.tabBar,
+          position: 'absolute',
+          bottom: Platform.OS === 'android' ? 20 : 25,
+          height: 80,
+          paddingBottom: 10,
+        },
+        tabBarHideOnKeyboard: true,
         tabBarBackground: () => (
           <LinearGradient
             colors={getTabBarGradient()}
@@ -109,9 +116,9 @@ const TabScreens = () => {
         component={TabUserScreen}
         options={{
           tabBarLabel: 'User',
-          tabBarIcon: ({color, focused}) => (
+          tabBarIcon: ({color, focused,size}) => (
             <View style={styles.iconContainer}>
-              <Icon name="account" color={color} size={34} />
+              <Icon name="account" color={color} size={size} />
             </View>
           ),
         }}
@@ -120,13 +127,13 @@ const TabScreens = () => {
           name="MapComponent"
           component={MapComponent}
           options={{
-            tabBarIcon: ({color, focused}) => {
+            tabBarIcon: ({color, focused, size}) => {
               return (
                 <View style={styles.iconContainer}>
                   <Icon
                     name="map-marker"
                     color={color}
-                    size={34}
+                    size={size}
                     style={[styles.icon, focused && styles.activeIcon]}
                   />
                   {focused && <View style={styles.activeIndicator} />}
@@ -140,12 +147,12 @@ const TabScreens = () => {
         name="TabMoonScreen"
         component={TabMoonScreen}
         options={{
-          tabBarIcon: ({color, focused}) => (
+          tabBarIcon: ({color, focused, size}) => (
             <View style={styles.iconContainer}>
               <Icon
                 name="moon-waning-crescent"
                 color={color}
-                size={34} // Explicit size
+                size={size} // Explicit size
                 style={[styles.icon, focused && styles.activeIcon]}
               />
               {focused && <View style={styles.activeIndicator} />}
@@ -182,12 +189,12 @@ const TabScreens = () => {
         name="TabWeatherScreen"
         component={TabWeatherScreen}
         options={{
-          tabBarIcon: ({color, focused}) => (
+          tabBarIcon: ({color, focused, size}) => (
             <View style={styles.iconContainer}>
               <Icon
                 name="weather-sunny"
                 color={color}
-                size={34} // Explicit size
+                size={size} // Explicit size
                 style={[styles.icon, focused && styles.activeIcon]}
               />
               {focused && <View style={styles.activeIndicator} />}
@@ -200,18 +207,19 @@ const TabScreens = () => {
         name="TabSpotsScreen"
         component={TabSpotsScreen}
         options={{
-          tabBarIcon: ({color, focused}) => (
+          tabBarIcon: ({color, focused, size}) => (
             <View style={styles.iconContainer}>
               <Icon
                 name="map-marker-radius"
                 color={color}
-                size={34} // Explicit size
+                size={size} // Explicit size
                 style={[styles.icon, focused && styles.activeIcon]}
               />
               {focused && <View style={styles.activeIndicator} />}
             </View>
           ),
           tabBarLabel: 'Spots',
+          
         }}
       />
      
@@ -233,7 +241,7 @@ const TabScreens = () => {
               <AntIcon
                 name="sound"
                 color={isSoundOn ? 'green' : 'red'}
-                size={45}
+                size={34}
               />
               <Text
                 style={{
@@ -255,11 +263,7 @@ const BlankScreen = () => null;
 
 const styles = {
   tabBar: {
-    height: 95,
-    position: 'absolute',
-    bottom: 20,
-    left: 5,
-    right: 5,
+    height: 80,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#ffd700',
@@ -272,7 +276,7 @@ const styles = {
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
     overflow: 'hidden',
-    paddingBottom: 15,
+    backgroundColor: 'transparent',
   },
   tabBarLabel: {
     fontSize: 12,
