@@ -20,7 +20,7 @@ const { width } = Dimensions.get('window');
 
 const StackSpotCreateScreen = ({ route, navigation }) => {
     const {  spots, updateSpots } = useAppContext();
-    const { coordinate,   } = route.params;
+    const { coordinate   } = route.params;
     const [markerTitle, setMarkerTitle] = useState('');
     const [markerDescription, setMarkerDescription] = useState('');
     const [images, setImages] = useState([]);

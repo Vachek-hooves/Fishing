@@ -57,7 +57,7 @@ const TabAndroidMap = ({navigation}) => {
     }
   }, [updateSpots]);
 
-  const getCurrentLocation = useCallback(async () => {
+  const getCurrentLocation = useCallback(() => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         position => {
@@ -68,23 +68,25 @@ const TabAndroidMap = ({navigation}) => {
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           };
-          updateLocation(newRegion, false);
+          //   setRegion(newRegion);
+          //   setUsingDefaultLocation(false);
           setIsLoading(false);
           resolve(newRegion);
         },
         error => {
           console.log('Location error:', error);
+          //   setUsingDefaultLocation(true);
           setIsLoading(false);
           reject(error);
         },
         {
-          enableHighAccuracy: true,
+          enableHighAccuracy: false,
           timeout: 15000,
           maximumAge: 10000,
         },
       );
     });
-  }, [updateLocation]);
+  }, []);
 
   const setupLocation = useCallback(async () => {
     if (locationInitialized.current) return;
@@ -123,10 +125,10 @@ const TabAndroidMap = ({navigation}) => {
   const handleMapLongPress = useCallback(event => {
     navigation.navigate('StackSpotCreateScreen', {
       coordinate: event.nativeEvent.coordinate,
-      spots,
-      updateSpots,
+      // spots,
+      // updateSpots,
     });
-  }, [navigation, spots, updateSpots]);
+  }, [navigation, spots]);
 
   const handleMarkerPress = useCallback(marker => {
     setSelectedMarker(marker);
