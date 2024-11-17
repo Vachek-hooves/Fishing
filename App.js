@@ -11,6 +11,7 @@ import {
   TabSpotsScreen,
   TabUserScreen,
   TabAndroidMap,
+  StackSpotCreateScreen,
 } from './screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -29,6 +30,7 @@ import {
   playBackgroundMusic,
   pauseBackgroundMusic,
   toggleBackgroundMusic,
+  getPlayingState,
 } from './components/sound/setPlayer';
 
 const Stack = createNativeStackNavigator();
@@ -42,30 +44,26 @@ const TabScreens = () => {
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
-      if (nextAppState === 'active' && isSoundOn) {
-        playBackgroundMusic();
+      if (nextAppState === 'active') {
+        setIsSoundOn(getPlayingState());
       }
     });
 
-    // Initialize sound when app starts
     const initSound = async () => {
       await setupPlayer();
-      await playBackgroundMusic();
-      setIsSoundOn(true);
+      const playing = await playBackgroundMusic();
+      setIsSoundOn(playing);
     };
 
     initSound();
 
     return () => {
       subscription.remove();
-      if (!isSoundOn) {
-        pauseBackgroundMusic();
-      }
     };
   }, []);
 
   const handleSoundToggle = async () => {
-    const newState = toggleBackgroundMusic();
+    const newState = await toggleBackgroundMusic();
     setIsSoundOn(newState);
   };
 
@@ -415,6 +413,7 @@ function App() {
           )} */}
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
           <Stack.Screen name="TabScreens" component={TabScreens} />
+          <Stack.Screen name="StackSpotCreateScreen" component={StackSpotCreateScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppProvider>

@@ -26,9 +26,10 @@ const DEFAULT_LOCATION = {
   longitudeDelta: 0.0421,
 };
 
-const TabAndroidMap = () => {
+const TabAndroidMap = ({navigation}) => {
   const {spots, updateSpots, location, updateLocation} = useAppContext();
   const mapRef = useRef(null);
+  const locationInitialized = useRef(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -56,7 +57,7 @@ const TabAndroidMap = () => {
     }
   }, [updateSpots]);
 
-  const getCurrentLocation = useCallback(() => {
+  const getCurrentLocation = useCallback(async () => {
     return new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         position => {
@@ -67,41 +68,46 @@ const TabAndroidMap = () => {
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           };
-          //   setRegion(newRegion);
-          //   setUsingDefaultLocation(false);
+          updateLocation(newRegion, false);
           setIsLoading(false);
           resolve(newRegion);
         },
         error => {
           console.log('Location error:', error);
-          //   setUsingDefaultLocation(true);
           setIsLoading(false);
           reject(error);
         },
         {
-          enableHighAccuracy: false,
+          enableHighAccuracy: true,
           timeout: 15000,
           maximumAge: 10000,
         },
       );
     });
-  }, []);
+  }, [updateLocation]);
 
   const setupLocation = useCallback(async () => {
+    if (locationInitialized.current) return;
+    
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      const hasPermission = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
       );
 
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        await getCurrentLocation();
-      } else {
-        // setUsingDefaultLocation(true);
-        setIsLoading(false);
+      if (!hasPermission) {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          setIsLoading(false);
+          return;
+        }
       }
+
+      await getCurrentLocation();
+      locationInitialized.current = true;
     } catch (err) {
       console.warn('Location permission error:', err);
-      //   setUsingDefaultLocation(true);
       setIsLoading(false);
     }
   }, [getCurrentLocation]);
@@ -115,9 +121,12 @@ const TabAndroidMap = () => {
   }, [loadMarkers, setupLocation]);
 
   const handleMapLongPress = useCallback(event => {
-    setNewMarkerCoordinate(event.nativeEvent.coordinate);
-    setModalVisible(true);
-  }, []);
+    navigation.navigate('StackSpotCreateScreen', {
+      coordinate: event.nativeEvent.coordinate,
+      spots,
+      updateSpots,
+    });
+  }, [navigation, spots, updateSpots]);
 
   const handleMarkerPress = useCallback(marker => {
     setSelectedMarker(marker);
@@ -129,19 +138,26 @@ const TabAndroidMap = () => {
     setupLocation();
   }, [setupLocation]);
 
-  const handleUserLocationChange = event => {
+  const handleUserLocationChange = useCallback((event) => {
+    if (!locationInitialized.current) return;
+    
     const {latitude, longitude} = event.nativeEvent.coordinate;
-    // console.log(latitude, longitude);
-    updateLocation(
-      {
-        latitude,
-        longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      },
-      false,
-    );
-  };
+    if (
+      !location ||
+      Math.abs(location.latitude - latitude) > 0.0001 ||
+      Math.abs(location.longitude - longitude) > 0.0001
+    ) {
+      updateLocation(
+        {
+          latitude,
+          longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        },
+        false,
+      );
+    }
+  }, [location, updateLocation]);
 
   if (isLoading) {
     return <LoadingIndicator />;

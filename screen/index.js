@@ -6,6 +6,7 @@ import TabSpotsScreen from './TabSpotsScreen';
 import TabUserScreen from './TabUserScreen';
 import TabAndroidMap from './TabAndroidMap';
 import TabTestComponent from './TabTestComponent';
+import StackSpotCreateScreen from './StackSpotCreateScreen';
 export {
   TabMapScreen,
   WelcomeScreen,
@@ -15,4 +16,5 @@ export {
   TabUserScreen,
   TabAndroidMap,
   TabTestComponent,
+  StackSpotCreateScreen,
 };

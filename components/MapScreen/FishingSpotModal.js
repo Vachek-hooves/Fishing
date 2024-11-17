@@ -163,19 +163,19 @@ const FishingSpotModal = ({ visible, onClose, coordinate, spots, updateSpots }) 
 
 const styles = StyleSheet.create({
   modalContainer: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 10,
     // justifyContent: 'center',
+    // flexGrow: 1,
   },
   modalContent: {
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 20,
-    maxHeight: '90%',
+    // maxHeight: '80%',
     width: width-20,
-    // height: height*0.4,
-    
+   
   },
   modalTitle: {
     fontSize: 20,

@@ -56,26 +56,33 @@ export const pauseBackgroundMusic = () => {
 };
 
 export const toggleBackgroundMusic = () => {
-  if (!backgroundMusic) {
-    setupPlayer().then(() => {
-      playBackgroundMusic();
-    });
-    return true;
-  }
-
-  if (isPlaying) {
-    backgroundMusic.pause();
-    isPlaying = false;
-    return false;
-  } else {
-    backgroundMusic.play((success) => {
-      if (!success) {
-        console.log('Playback failed due to audio decoding errors');
+  return new Promise((resolve) => {
+    if (!backgroundMusic) {
+      setupPlayer().then(() => {
+        playBackgroundMusic();
+        isPlaying = true;
+        resolve(true);
+      });
+    } else {
+      if (isPlaying) {
+        backgroundMusic.pause();
+        isPlaying = false;
+        resolve(false);
+      } else {
+        backgroundMusic.play((success) => {
+          if (!success) {
+            console.log('Playback failed due to audio decoding errors');
+          }
+          isPlaying = true;
+          resolve(true);
+        });
       }
-    });
-    isPlaying = true;
-    return true;
-  }
+    }
+  });
+};
+
+export const getPlayingState = () => {
+  return isPlaying;
 };
 
 export const cleanupPlayer = () => {
