@@ -1,12 +1,15 @@
 import Sound from 'react-native-sound';
+import { Platform } from 'react-native';
 
 let backgroundMusic = null;
 let isPlaying = false;
 
 export const setupPlayer = () => {
-  if (backgroundMusic) return; // Prevent multiple initializations
+  if (backgroundMusic) return;
 
-  Sound.setCategory('Playback');
+  Sound.setCategory('Playback', true);
+  Sound.setMode('SpokenAudio');
+  Sound.setActive(true);
   
   return new Promise((resolve, reject) => {
     backgroundMusic = new Sound(
@@ -19,6 +22,11 @@ export const setupPlayer = () => {
         }
         backgroundMusic.setNumberOfLoops(-1);
         backgroundMusic.setVolume(0.5);
+        
+        if (Platform.OS === 'ios') {
+          backgroundMusic.setCategory('Playback');
+        }
+        
         resolve();
       }
     );
@@ -30,7 +38,7 @@ export const playBackgroundMusic = async () => {
     await setupPlayer();
   }
   
-  if (!isPlaying && backgroundMusic) {
+  if (backgroundMusic) {
     backgroundMusic.play((success) => {
       if (!success) {
         console.log('Playback failed due to audio decoding errors');
@@ -41,7 +49,7 @@ export const playBackgroundMusic = async () => {
 };
 
 export const pauseBackgroundMusic = () => {
-  if (backgroundMusic && isPlaying) {
+  if (backgroundMusic) {
     backgroundMusic.pause();
     isPlaying = false;
   }
@@ -49,15 +57,23 @@ export const pauseBackgroundMusic = () => {
 
 export const toggleBackgroundMusic = () => {
   if (!backgroundMusic) {
-    setupPlayer();
+    setupPlayer().then(() => {
+      playBackgroundMusic();
+    });
     return true;
   }
 
   if (isPlaying) {
-    pauseBackgroundMusic();
+    backgroundMusic.pause();
+    isPlaying = false;
     return false;
   } else {
-    playBackgroundMusic();
+    backgroundMusic.play((success) => {
+      if (!success) {
+        console.log('Playback failed due to audio decoding errors');
+      }
+    });
+    isPlaying = true;
     return true;
   }
 };

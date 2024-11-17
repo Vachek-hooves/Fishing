@@ -172,28 +172,11 @@ const TabAndroidMap = () => {
             onPress={() => handleMarkerPress(marker)}>
             <View style={styles.markerContainer}>
               <Fish name="fish" size={32} color="#08313a" />
-
-              {/* {marker.title && (
-                <View style={styles.markerLabelContainer}>
-                  <Text style={styles.markerLabel}>{marker.title}</Text>
-                </View>
-              )} */}
             </View>
           </Marker>
         ))}
       </MapView>
       <MapPressNotice />
-
-      {/* {usingDefaultLocation && (
-        <TouchableOpacity 
-          style={styles.locationButton}
-          onPress={retryLocation}
-        >
-          <Icon name="my-location" size={24} color="white" />
-          <Text style={styles.locationButtonText}>Get My Location</Text>
-        </TouchableOpacity>
-      )} */}
-
       <FishingSpotModal
         visible={modalVisible}
         onClose={() => {

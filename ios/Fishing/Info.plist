@@ -39,6 +39,10 @@
 	<string>We need your location to provide accurate weather information</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to photo library to add images to your fishing spots</string>
+	<key>UIBackgroundModes</key>
+	<array>
+    <string>audio</string>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

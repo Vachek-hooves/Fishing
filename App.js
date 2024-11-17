@@ -44,8 +44,6 @@ const TabScreens = () => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (nextAppState === 'active' && isSoundOn) {
         playBackgroundMusic();
-      } else if (nextAppState === 'background' || nextAppState === 'inactive') {
-        pauseBackgroundMusic();
       }
     });
 
@@ -60,11 +58,13 @@ const TabScreens = () => {
 
     return () => {
       subscription.remove();
-      pauseBackgroundMusic();
+      if (!isSoundOn) {
+        pauseBackgroundMusic();
+      }
     };
   }, []);
 
-  const handleSoundToggle = () => {
+  const handleSoundToggle = async () => {
     const newState = toggleBackgroundMusic();
     setIsSoundOn(newState);
   };
