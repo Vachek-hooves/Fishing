@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -31,6 +31,7 @@ import {
   pauseBackgroundMusic,
   toggleBackgroundMusic,
   getPlayingState,
+  cleanupPlayer,
 } from './components/sound/setPlayer';
 
 const Stack = createNativeStackNavigator();
@@ -42,30 +43,24 @@ const TabScreens = () => {
   const [focusedScreen, setFocusedScreen] = useState('TabMapScreen');
   const [isSoundOn, setIsSoundOn] = useState(true);
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', nextAppState => {
-      if (nextAppState === 'active') {
-        setIsSoundOn(getPlayingState());
-      }
-    });
+  const handleSoundToggle = () => {
+    const newState = toggleBackgroundMusic();
+    setIsSoundOn(newState);
+  };
 
+  useEffect(() => {
     const initSound = async () => {
       await setupPlayer();
-      const playing = await playBackgroundMusic();
-      setIsSoundOn(playing);
+      playBackgroundMusic();
+      setIsSoundOn(true);
     };
 
     initSound();
 
     return () => {
-      subscription.remove();
+      cleanupPlayer();
     };
   }, []);
-
-  const handleSoundToggle = async () => {
-    const newState = await toggleBackgroundMusic();
-    setIsSoundOn(newState);
-  };
 
   const getTabBarGradient = () => {
     switch (focusedScreen) {
@@ -226,7 +221,7 @@ const TabScreens = () => {
         component={BlankScreen}
         options={{
           tabBarLabel: 'Sound',
-          tabBarButton: props => (
+          tabBarButton: (props) => (
             <TouchableOpacity
               {...props}
               onPress={handleSoundToggle}
@@ -238,31 +233,19 @@ const TabScreens = () => {
               }}>
               <AntIcon
                 name="sound"
-                color={isSoundOn ? 'green' : 'red'}
+                color={isSoundOn ? '#4CAF50' : '#ff0000'}
                 size={32}
               />
-              <Text
-                style={{
-                  color: isSoundOn ? 'green' : 'red',
-                  fontSize: 12,
-                  fontWeight: '600',
-                  marginTop: 10,
-                }}>
+              <Text style={{
+                color: isSoundOn ? '#4CAF50' : '#ff0000',
+                fontSize: 12,
+                marginTop: 4
+              }}>
                 Sound
               </Text>
             </TouchableOpacity>
           ),
         }}
-        // options={{
-        //   tabBarButton:({color,size,focused})=>(
-        //     <View style={styles.iconContainer} onPress={handleSoundToggle}>
-        //       <Icon name="sound" color={color} size={size}  style={[styles.icon, focused && styles.activeIcon]}/>
-        //       {focused && <View style={styles.activeIndicator} />}
-        //     </View>
-        //   ),
-        //   tabBarLabel: 'Sound',
-          
-        // }}
       />
     </Tab.Navigator>
   );

@@ -5,13 +5,13 @@ let backgroundMusic = null;
 let isPlaying = false;
 
 export const setupPlayer = () => {
-  if (backgroundMusic) return;
+  if (backgroundMusic) return Promise.resolve();
 
-  Sound.setCategory('Playback', true);
-  Sound.setMode('SpokenAudio');
-  Sound.setActive(true);
-  
   return new Promise((resolve, reject) => {
+    Sound.setCategory('Playback', true);
+    Sound.setMode('SpokenAudio');
+    Sound.setActive(true);
+
     backgroundMusic = new Sound(
       require('../../assets/bgMusic.mp3'), 
       (error) => {
@@ -22,71 +22,43 @@ export const setupPlayer = () => {
         }
         backgroundMusic.setNumberOfLoops(-1);
         backgroundMusic.setVolume(0.5);
-        
-        if (Platform.OS === 'ios') {
-          backgroundMusic.setCategory('Playback');
-        }
-        
         resolve();
       }
     );
   });
 };
 
-export const playBackgroundMusic = async () => {
+export const toggleBackgroundMusic = () => {
   if (!backgroundMusic) {
-    await setupPlayer();
+    return false;
   }
-  
-  if (backgroundMusic) {
-    backgroundMusic.play((success) => {
-      if (!success) {
-        console.log('Playback failed due to audio decoding errors');
-      }
-    });
-    isPlaying = true;
-  }
-};
 
-export const pauseBackgroundMusic = () => {
-  if (backgroundMusic) {
+  if (isPlaying) {
     backgroundMusic.pause();
     isPlaying = false;
+    return false;
+  } else {
+    backgroundMusic.play();
+    isPlaying = true;
+    return true;
   }
 };
 
-export const toggleBackgroundMusic = () => {
-  return new Promise((resolve) => {
-    if (!backgroundMusic) {
-      setupPlayer().then(() => {
-        playBackgroundMusic();
-        isPlaying = true;
-        resolve(true);
-      });
-    } else {
-      if (isPlaying) {
-        backgroundMusic.pause();
-        isPlaying = false;
-        resolve(false);
-      } else {
-        backgroundMusic.play((success) => {
-          if (!success) {
-            console.log('Playback failed due to audio decoding errors');
-          }
-          isPlaying = true;
-          resolve(true);
-        });
-      }
-    }
-  });
+export const playBackgroundMusic = () => {
+  if (!backgroundMusic) {
+    return false;
+  }
+
+  backgroundMusic.play();
+  isPlaying = true;
+  return true;
 };
 
-export const getPlayingState = () => {
-  return isPlaying;
-};
+export const getPlayingState = () => isPlaying;
 
 export const cleanupPlayer = () => {
   if (backgroundMusic) {
+    backgroundMusic.stop();
     backgroundMusic.release();
     backgroundMusic = null;
     isPlaying = false;
