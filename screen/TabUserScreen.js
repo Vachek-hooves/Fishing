@@ -197,14 +197,14 @@ const TabUserScreen = () => {
                     onPress={() => setIsEditing(true)}
                   >
                     <Icon name="pencil" size={20} color="#003366" />
-                    <Text style={styles.buttonText}>Edit Profile</Text>
+                    <Text style={styles.buttonText}>Edit</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
                     style={styles.deleteAccountButton} 
                     onPress={handleDeleteProfile}
                   >
                     <Icon name="account-remove" size={20} color="#fff" />
-                    <Text style={styles.deleteButtonText}>Delete Account</Text>
+                    <Text style={styles.deleteButtonText}>Delete</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -534,7 +534,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     // flexDirection:'column'
-    flex:1
+    flex:1,
+    justifyContent:'center'
   },
   buttonText: {
     color: '#003366',
@@ -624,6 +625,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     flex: 1,
+    justifyContent:'center'
   },
   deleteButtonText: {
     color: '#fff',
