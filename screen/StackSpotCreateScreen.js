@@ -94,7 +94,7 @@ const StackSpotCreateScreen = ({ route, navigation }) => {
 
 
   return (
-    <>
+
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Add New Fishing Spot</Text>
       
@@ -152,14 +152,15 @@ const StackSpotCreateScreen = ({ route, navigation }) => {
           <Text style={styles.buttonText}>Cancel</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+      <View style={{height:50}}></View>
     <CustomAlert
         visible={alertVisible}
         title={alertConfig.title}
         message={alertConfig.message}
         onClose={() => setAlertVisible(false)}
       />
-    </>
+    </ScrollView>
+ 
   )
 }
 
