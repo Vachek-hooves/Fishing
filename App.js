@@ -31,7 +31,7 @@ import {
   pauseBackgroundMusic,
   toggleBackgroundMusic,
   getPlayingState,
-  cleanupPlayer,
+cleanupPlayer
 } from './components/sound/setPlayer';
 
 const Stack = createNativeStackNavigator();
@@ -81,8 +81,9 @@ const TabScreens = () => {
           bottom: Platform.OS === 'android' ? 20 : 25,
           height: 80,
           paddingBottom: 10,
+          // display: keyboardVisible ? 'none' : 'flex',
         },
-        tabBarHideOnKeyboard: true,
+        // tabBarHideOnKeyboard: true,
         tabBarBackground: () => (
           <LinearGradient
             colors={getTabBarGradient()}
