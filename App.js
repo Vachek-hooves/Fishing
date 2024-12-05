@@ -83,7 +83,7 @@ const TabScreens = () => {
           paddingBottom: 10,
           // display: keyboardVisible ? 'none' : 'flex',
         },
-        // tabBarHideOnKeyboard: true,
+        tabBarHideOnKeyboard: true,
         tabBarBackground: () => (
           <LinearGradient
             colors={getTabBarGradient()}
